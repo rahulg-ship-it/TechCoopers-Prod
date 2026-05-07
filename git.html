@@ -1,0 +1,267 @@
+<!-- Git Setup -->
+git config --global user.name "Rahul Gupta TechCoopers"
+git config --global user.email "rahul.g@selectiva.io"
+
+
+<!-- Check: -->
+git config --list
+
+_________________________________________
+<!-- Project Folder -->                 |
+mkdir my-website                        |
+cd my-website                           |
+                                        |
+<!-- Files Banao -->                    |
+touch index.html // not working         |
+touch style.css                         |
+                                        |
+OR                                      |
+New-Item index.html -ItemType File      |
+________________________________________|
+
+
+<!-- Check -->
+dir OR ls
+
+
+<!-- Git Initialize -->
+git init
+
+<!-- Git Status -->
+git status
+
+<!-- Staging -->
+git add .
+OR
+git add index.html
+git add style.css
+
+
+git commit -m "Initial production website"
+
+
+<!-- Main Branch Rename -->
+git branch -M main
+
+
+<!-- Remote Connect -->
+git remote add https://github.com/rahulg-ship-it/TechCoopers-Prod.git // not working
+git remote add origin https://github.com/rahulg-ship-it/TechCoopers-Prod.git
+
+
+<!-- Check: -->
+git remote -v
+
+
+<!-- Push Production -->
+git push -u origin main
+
+
+_______________________________________________________
+<!-- QA Branch -->
+git checkout -b qa
+
+<!-- Push -->
+git push -u origin qa
+[
+    remote: Create a pull request for 'qa' on GitHub by visiting: https://github.com/rahul-gupta-stack/Git-Prod/pull/new/qa   
+]
+
+
+<!-- UAT Branch -->
+git checkout main
+git checkout -b uat
+git push -u origin uat
+
+
+<!-- Feature Branch -->
+git checkout qa
+<!-- git pull origin feature/header-update -->
+git checkout -b feature/header-update
+
+
+<!-- change in code -->
+<h2>Welcome to QA Testing</h2>
+
+<!-- Forgot what changed? -->
+<!-- git diff -->
+
+<!-- Stage + Commit -->
+git add .
+git commit -m "Added QA header update"
+
+
+<!-- Push Feature Branch -->
+git push -u origin feature/header-update
+
+
+
+
+--------------------------------------------------|
+FLOW - feature branch → QA → UAT → Production     |
+--------------------------------------------------|
+<!-- Merge Feature into QA -->
+git checkout qa
+git merge feature/header-update
+git push
+
+
+<!-- Merge QA into UAT -->
+git checkout uat
+git merge qa
+git push
+
+<!-- Merge UAT into Production -->
+git checkout main
+git merge uat
+git push
+
+
+
+
+--------------------------------------------------|
+USEFUL COMMANDS                                   |
+--------------------------------------------------|
+<!-- Branch List -->
+git branch
+
+<!-- All Branch -->
+git branch -a
+
+<!-- Switch Branch -->
+git checkout branch-name
+
+<!-- New Branch -->
+git checkout -b new-branch
+
+<!-- Merge -->
+git merge branch-name
+
+<!-- Pull Latest: -->
+git pull
+
+<!-- Push -->
+git pull
+
+<!-- Commit History -->
+git log --oneline
+
+<!-- Temporary Save -->
+git stash
+
+<!-- Restore -->
+git stash pop
+
+<!-- HOTFIX PROCESS -->
+git checkout main
+git checkout -b hotfix/fix-css
+
+<!-- ROLLBACK -->
+git revert COMMIT_ID
+
+
+| Feature              | QA Instance                                                | UAT Instance                                       |
+| -------------------- | ---------------------------------------------------------- | -------------------------------------------------- |
+| Full Form            | Quality Assurance                                          | User Acceptance Testing                            |
+| Purpose              | Developers/testers verify bugs, functionality, integration | Client/business users verify business requirements |
+| Who Uses It          | QA team, developers, testers                               | Client, product owner, business stakeholders       |
+| Focus                | Technical correctness                                      | Business correctness                               |
+| Testing Type         | Functional, regression, integration, automation            | Real-world user scenarios                          |
+| Data                 | Test or dummy data                                         | Production-like realistic data                     |
+| Stability            | Frequent changes                                           | More stable                                        |
+| Deployment Frequency | Often                                                      | Less frequent, controlled                          |
+| Goal                 | “Does it work correctly?”                                  | “Does it meet business needs?”                     |
+
+
+
+
+
+
+
+
+
+
+
+git branch -M main (WHAT DOES THIS COMMAND DO?)
+
+what is HOTFIX PROCESS in git
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+🎙️ Guest:
+Anubhav Sethi (@anubhavintech )
+
+- Linkedin :- https://www.linkedin.com/in/harshit-trehan/
+
+
+
+
+
+
+
+
+
+
+-------------------------------------------------------
+Table-Level Backup Rollback
+CREATE TABLE wp_pmpro_memberships_users_backup AS
+SELECT * FROM wp_pmpro_memberships_users;
+
+Rollback:
+
+TRUNCATE TABLE wp_pmpro_memberships_users;
+INSERT INTO wp_pmpro_memberships_users
+SELECT * FROM wp_pmpro_memberships_users_backup;
