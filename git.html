@@ -13,8 +13,6 @@ cd my-website                           |
                                         |
 <!-- Files Banao -->                    |
 touch index.html // not working         |
-touch style.css                         |
-                                        |
 OR                                      |
 New-Item index.html -ItemType File      |
 ________________________________________|
@@ -24,7 +22,7 @@ ________________________________________|
 dir OR ls
 
 
-<!-- Git Initialize -->
+<!-- Git Initialize (First Time) -->
 git init
 
 <!-- Git Status -->
@@ -58,14 +56,12 @@ git push -u origin main
 
 
 _______________________________________________________
-<!-- QA Branch -->
+<!-- Create QA Branch -->
+git checkout main
 git checkout -b qa
 
 <!-- Push -->
 git push -u origin qa
-[
-    remote: Create a pull request for 'qa' on GitHub by visiting: https://github.com/rahul-gupta-stack/Git-Prod/pull/new/qa   
-]
 
 
 <!-- UAT Branch -->
@@ -76,7 +72,19 @@ git push -u origin uat
 
 <!-- Feature Branch -->
 git checkout qa
+<!-- git pull origin feature/header-update -->
 git checkout -b feature/header-update
+
+
+<!-- If you want to cancel merge completely -->
+git status
+git merge --abort
+
+
+----------------------------------------------------------
+<!-- Professional Tip - Before merge -->
+git pull
+----------------------------------------------------------
 
 
 <!-- change in code -->
@@ -94,9 +102,9 @@ git push -u origin feature/header-update
 
 
 
---------------------------------------------------|
+---------------------------------------------------
 FLOW - feature branch → QA → UAT → Production     |
---------------------------------------------------|
+---------------------------------------------------
 <!-- Merge Feature into QA -->
 git checkout qa
 git merge feature/header-update
@@ -116,9 +124,9 @@ git push
 
 
 
---------------------------------------------------|
+---------------------------------------------------
 USEFUL COMMANDS                                   |
---------------------------------------------------|
+---------------------------------------------------
 <!-- Branch List -->
 git branch
 
@@ -130,6 +138,9 @@ git checkout branch-name
 
 <!-- New Branch -->
 git checkout -b new-branch
+
+<!-- Delete branch -->
+git branch -d branch-name
 
 <!-- Merge -->
 git merge branch-name
@@ -143,11 +154,18 @@ git pull
 <!-- Commit History -->
 git log --oneline
 
-<!-- Temporary Save -->
+<!-- Temporary Save OR Move these changes to QA/UAT-->
 git stash
 
-<!-- Restore -->
+<!-- Untracked files stash -->
+git stash push --include-untracked
+
+<!-- Restore OR Apply your saved changes-->
 git stash pop
+
+<!-- Delete file -->
+del git.html
+
 
 <!-- HOTFIX PROCESS -->
 git checkout main
@@ -175,83 +193,6 @@ git revert COMMIT_ID
 
 
 
-
-
-
-
-git branch -M main (WHAT DOES THIS COMMAND DO?)
-
-what is HOTFIX PROCESS in git
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-🎙️ Guest:
-Anubhav Sethi (@anubhavintech )
-
-- Linkedin :- https://www.linkedin.com/in/harshit-trehan/
-
-
-
-
-
-
-
-
-
-
 -------------------------------------------------------
 Table-Level Backup Rollback
 CREATE TABLE wp_pmpro_memberships_users_backup AS
@@ -262,3 +203,16 @@ Rollback:
 TRUNCATE TABLE wp_pmpro_memberships_users;
 INSERT INTO wp_pmpro_memberships_users
 SELECT * FROM wp_pmpro_memberships_users_backup;
+
+
+
+
+
+
+
+--------------------------------------------------
+
+git branch -M main (WHAT DOES THIS COMMAND DO?)
+
+what is HOTFIX PROCESS in git
+---------------------------------------------------
