@@ -3,6 +3,15 @@ git config --global user.name "Rahul Gupta TechCoopers"
 git config --global user.email "rahul.g@selectiva.io"
 
 
+<!-- Controls how Git handles line endings between: Windows (CRLF) OR Linux/Mac (LF) -->
+git config --global core.autocrlf "input"
+
+
+<!-- Editing the value -->
+git config --global -e
+
+
+
 <!-- Check: -->
 git config --list
 
@@ -13,8 +22,6 @@ cd my-website                           |
                                         |
 <!-- Files Banao -->                    |
 touch index.html // not working         |
-touch style.css                         |
-                                        |
 OR                                      |
 New-Item index.html -ItemType File      |
 ________________________________________|
@@ -24,11 +31,23 @@ ________________________________________|
 dir OR ls
 
 
-<!-- Git Initialize -->
+<!-- Git Initialize (First Time) -->
 git init
+
 
 <!-- Git Status -->
 git status
+
+<!-- To Know Current Stataus of Unstages and stages file -->
+git status -s
+
+
+--------------------------------------------------------
+<!-- git ignore file - git understand file not exist -->
+--------------------------------------------------------
+
+
+
 
 <!-- Staging -->
 git add .
@@ -58,14 +77,12 @@ git push -u origin main
 
 
 _______________________________________________________
-<!-- QA Branch -->
+<!-- Create QA Branch -->
+git checkout main
 git checkout -b qa
 
 <!-- Push -->
 git push -u origin qa
-[
-    remote: Create a pull request for 'qa' on GitHub by visiting: https://github.com/rahul-gupta-stack/Git-Prod/pull/new/qa   
-]
 
 
 <!-- UAT Branch -->
@@ -80,6 +97,17 @@ git checkout qa
 git checkout -b feature/header-update
 
 
+<!-- If you want to cancel merge completely -->
+git status
+git merge --abort
+
+
+----------------------------------------------------------
+<!-- Professional Tip - Before merge -->
+git pull
+----------------------------------------------------------
+
+
 <!-- change in code -->
 <h2>Welcome to QA Testing</h2>
 
@@ -91,13 +119,14 @@ git commit -m "Added QA header update"
 
 <!-- Push Feature Branch -->
 git push -u origin feature/header-update
+git push origin feature/header-update
 
 
 
 
---------------------------------------------------|
+---------------------------------------------------
 FLOW - feature branch → QA → UAT → Production     |
---------------------------------------------------|
+---------------------------------------------------
 <!-- Merge Feature into QA -->
 git checkout qa
 git merge feature/header-update
@@ -117,9 +146,9 @@ git push
 
 
 
---------------------------------------------------|
+---------------------------------------------------
 USEFUL COMMANDS                                   |
---------------------------------------------------|
+---------------------------------------------------
 <!-- Branch List -->
 git branch
 
@@ -132,6 +161,9 @@ git checkout branch-name
 <!-- New Branch -->
 git checkout -b new-branch
 
+<!-- Delete branch -->
+git branch -d branch-name
+
 <!-- Merge -->
 git merge branch-name
 
@@ -141,14 +173,24 @@ git pull
 <!-- Push -->
 git pull
 
-<!-- Commit History -->
+<!-- Commit History OR Current Status of saved points-->
+<!-- To Know Current Status of Saved Point (Total Checkpoints)-->
+<!-- All Commit Histories -->
 git log --oneline
 
-<!-- Temporary Save -->
+<!-- Temporary Save OR Move these changes to QA/UAT-->
 git stash
 
-<!-- Restore -->
+
+<!-- Untracked files stash -->
+git stash push --include-untracked
+
+<!-- Restore OR Apply your saved changes-->
 git stash pop
+
+<!-- Delete file -->
+del git.html
+
 
 <!-- HOTFIX PROCESS -->
 git checkout main
@@ -156,6 +198,29 @@ git checkout -b hotfix/fix-css
 
 <!-- ROLLBACK -->
 git revert COMMIT_ID
+
+
+
+
+
+
+
+
+Untracked - Currently git not managed or track your file.
+Add - Aware about your File (added or staged)
+Commit - Now git tracked your file (Create Saved Checkpoint)
+
+
+
+
+<!-- Going Back to some previous saved points (undo commit) -->
+<!-- 1. Hard  - REMOVE OLD DATA FROM EVERYWHERE -->
+git reset --hard HEAD~1
+2. Soft  - 
+3. Mixed - 
+
+
+
 
 
 | Feature              | QA Instance                                                | UAT Instance                                       |
@@ -176,83 +241,6 @@ git revert COMMIT_ID
 
 
 
-
-
-
-
-git branch -M main (WHAT DOES THIS COMMAND DO?)
-
-what is HOTFIX PROCESS in git
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-🎙️ Guest:
-Anubhav Sethi (@anubhavintech )
-
-- Linkedin :- https://www.linkedin.com/in/harshit-trehan/
-
-
-
-
-
-
-
-
-
-
 -------------------------------------------------------
 Table-Level Backup Rollback
 CREATE TABLE wp_pmpro_memberships_users_backup AS
@@ -263,3 +251,16 @@ Rollback:
 TRUNCATE TABLE wp_pmpro_memberships_users;
 INSERT INTO wp_pmpro_memberships_users
 SELECT * FROM wp_pmpro_memberships_users_backup;
+
+
+
+
+
+
+
+--------------------------------------------------
+
+git branch -M main (WHAT DOES THIS COMMAND DO?)
+
+what is HOTFIX PROCESS in git
+---------------------------------------------------
