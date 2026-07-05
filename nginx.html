@@ -1,0 +1,481 @@
+NGINX is a lightweight, high-performance webserver or router or proxy for TCP or HTTP level request, designed to handle high traffic and serve static content efficiently. it also acts like a reverse proxy, also gives the feature of load balancing, it also does url redirection, indexing and caching.
+
+Jab browser kisi website ko request karta hai, to request pehle NGINX ke paas aati hai. NGINX phir:
+
+nginx architecure me ek master process chal rhi hoti hai, jo bahut sari child process bnakar rkti hai, and when user comes to our site, it treats like one child-process, then second user treats like different second child process.
+nginx architecture me chhoti chooti child proceses ya worker processes chal rhi hoti hai and uski vajah se aapka load distrubute ho jata hai.
+static files directly serve karta hai
+ya request backend application (PHP, Node.js, Python etc.) ko forward karta hai.
+
+MAIN USES OF NGINX - SERVE WEBSITE, One nginx can host MANY websites.
+
+
+
+Fast, memory footprint is very low; also serve large number of requests.
+
+
+web applicatoin ko host karne ke liye use nginx, its very important for devops, NGINX is free and open-source.
+
+nginx is all about configuration
+
+
+proxy me dosto ki presence lagwana
+
+
+NGINX mainly does 4 things:
+| Feature        | Meaning              |
+| -------------  | -----------------    |
+| Web server     | Serves websites      |
+| Reverse proxy  | Forwards requests    | Here nginx becomes powerful(Upstream) - Most modern apps directly internet pe expose nahi karte.
+| Load balancer  | Splits traffic       | one type of servers - NGINX distributes traffic
+| Cache          | Assets cached        | Site Become Faster 
+| SSL termination| HTTPS                |
+| Rate limiting  | DDoS protection      |
+| Fast           | high performance     |
+| Lightweight    | low memory           |
+| Scalable       | handles high traffic |
+| SSL handling   | HTTPS management     |
+| Compression
+| Event-drive architecture
+| Indexing
+
+
+| Apache                 | NGINX                  |
+| ---------------------- | ---------------------- |
+| process/thread based   | event driven           |
+| heavier                | lightweight            |
+| slower static handling | faster static handling |
+| old traditional        | modern popular         |
+
+docker - Server (OS, Run time environmnet, code, dependencies) inhe file formate me convert karta hai and called image - run image with the help of docker - container (isme hamari chaaro cheez rhti hai).
+
+Container - image after run server.
+Kubernete - manage our container, , its working like a pod (wrapper - container)
+    Feature - Auto Restart server, load balancing and Auto Scaling (load ko replicate karna)
+docker --version
+docker run hello-world
+
+
+<!-- Run Docker - Your First NGINX Server -->
+| Part               | Meaning                            |
+| ------------------ | ---------------------------------- |
+| docker run         | create container                   |
+| --name my-nginx    | running container name             |
+| -p 8080:80         | localhost:8080 → container port 80 |
+| -d                 | background mode                    |
+| nginx              | official nginx image               |
+
+
+<!-- Run Your First NGINX Server -->
+docker run --name my-nginx -p 8080:80 -d nginx
+OR
+<!-- Windows CMD -->
+docker run --name my-nginx -p 8080:80 -v C:\nginx-course:/usr/share/nginx/html -d nginx
+OR
+<!-- PowerShell -->
+docker run --name my-nginx -p 8080:80 -v ${PWD}:/usr/share/nginx/html -d nginx
+OR
+<!-- maps: C:\nginx-project to container folder: -->
+docker run --name my-nginx `
+-p 80:80 `
+-v C:\nginx-project:/usr/share/nginx/html `
+-v C:\nginx-project\config\default.conf:/etc/nginx/conf.d/default.conf `
+-d nginx
+
+
+<!-- Now open: -->
+http://localhost:8080
+
+
+<!-- Open NGINX Config -->
+docker exec -it my-nginx bash
+
+<!-- logs - Terminal 1 -->
+tail -f /var/log/nginx/access.log
+
+<!-- Linux silently changed folder - only cursor blink -->
+cd /etc/nginx
+pwd
+ls
+cat nginx.conf // see actual nginx configuration.
+
+OR
+
+<!-- View config -->
+cat /etc/nginx/nginx.conf (Main nginx config File)
+cat /etc/nginx/conf.d/default.conf
+
+
+<!-- View Main config -->
+| Block    | Purpose      |
+| -------- | ------------ |
+| events   | connections  |
+| http     | web config   |
+| server   | one website  |
+| location | URL handling |
+
+
+
+
+<!-- Website files: -->
+    /usr/share/nginx/html
+
+<!-- view running Docker containers - Terminal-2 -->
+docker ps
+
+<!-- Show all containers (even stopped) -->
+docker ps -a
+
+
+<!-- Start again -->
+docker start my-nginx
+
+
+<!-- Stop nginx container - Browser was talking to nginx first (No nginx = no response) -->
+docker stop my-nginx
+
+
+
+<!-- Remove container -->
+docker rm my-nginx
+docker rm -f my-nginx
+
+
+<!-- See logs -->
+docker logs my-nginx
+
+<!-- remove container -->
+docker rm -f my-nginx
+
+
+<!-- Exit Container -->
+CTRL + C
+
+
+<!-- logs -->
+tail -f error.log
+OR
+docker logs -f my-nginx
+OR
+docker exec my-nginx cat /var/log/nginx/access.log
+docker exec my-nginx cat /var/log/nginx/error.log
+
+
+
+| Command                 | Use                                |
+| ----------------------- | ---------------------------------- |
+| nginx -t                | test config                        | Prevents breaking website
+| systemctl status nginx  | nginx running?                     |
+| systemctl restart nginx | Stops + Re-starts nginx completely | Tiny downtime possible.
+| systemctl reload nginx  | Reloads config WITHOUT server stop | Reload safely
+| tail -f access.log      | see requests                       |
+
+
+<!-- Is configuration valid? - ALWAYS run before restart. -->
+nginx -t
+OR
+docker exec my-nginx nginx -t
+
+
+<!-- Check nginx status -->
+sudo systemctl status nginx
+
+<!-- NOW safe to restart nginx -->
+sudo systemctl restart nginx
+
+
+cd /var/www/html
+ls -la
+
+<!-- FILE PERMISSIONS -->
+ls -la /var/www/html
+
+<!-- stop nginx -->
+sudo systemctl stop nginx
+
+
+<!-- Reload/Testing NGINX - Terminal 3 -->
+nginx -s reload
+OR
+systemctl reload nginx
+OR Docker 
+docker exec my-nginx nginx -s reload
+
+
+<!-- professional workflow - reload ONLY if test passes -->
+sudo nginx -t && sudo systemctl reload nginx
+
+
+
+
+NGINX Config Structure
+| Block    | Purpose      |
+| -------- | ------------ |
+| events   | connections  |
+| http     | web config   |
+| server   | one website  |
+| location | URL handling |
+
+
+80  = HTTP
+443 = HTTPS
+
+
+| Code | Meaning           |
+| ---- | ----------------- |
+| 200  | success           |
+| 301  | redirect          |
+| 403  | permission denied |
+| 404  | file not found    |
+| 500  | server error      |
+
+
+<!-- NGINX → PHP-FPM → WordPress -->
+<!-- NGINX cannot run PHP itself → NGINX only forwards PHP -->
+
+
+<!-- nginx.conf - main file, jisme ham sara kaam kar skte hai
+  create two directories
+  sudo mkdir sites-enabled sites-available -->
+
+
+sites-available = all configs
+sites-enabled = currently active configs
+
+
+<!-- sites-available - Stores all site configs -->
+/etc/nginx/sites-available/
+
+
+<!-- sites-enabled - ACTIVE websites -->
+<!-- Only enabled websites go here - Usually created using symbolic link -->
+/etc/nginx/sites-enabled/
+ln -s
+
+
+<!-- activate this website -->
+sudo ln -s /etc/nginx/sites-available/qa /etc/nginx/sites-enabled/
+
+<!-- Website disabled -->
+sudo rm /etc/nginx/sites-enabled/qa
+
+============================================================
+============================================================
+
+
+<!-- AWS (EC2 instance - Ubuntu server) -->
+
+sudo apt --get update
+
+0. <!-- Package Management -->
+sudo apt update
+sudo apt upgrade
+
+<!-- UPDATE SERVER -->
+1. sudo apt update
+
+<!-- INSTALL NGINX -->
+2. sudo apt install nginx -y
+
+<!-- INSTALL Multiple SOFTWARE -->
+3. sudo apt install nginx git unzip -y
+    Unzip plugin: - unzip plugin.zip
+    Zip folder:   - zip -r backup.zip foldername
+
+<!-- CHECK STATUS -->
+4. sudo systemctl status nginx
+
+<!-- INSTALL PHP + MYSQL -->
+sudo apt install php-fpm php-mysql mysql-server -y
+
+<!-- DATABASE SETUP -->
+sudo mysql
+
+<!-- CREATE DATABASE -->
+CREATE DATABASE wordpress_db;
+
+
+<!-- CREATE USER -->
+CREATE USER 'wpuser'@'localhost' IDENTIFIED BY 'password123';
+
+<!-- GIVE PERMISSION -->
+GRANT ALL PRIVILEGES ON wordpress_db.* TO 'wpuser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+
+
+
+<!-- Verify -->
+ls
+
+
+<!-- AWS SERVER INSTALL GIT -->
+sudo apt install git -y
+sudo git clone YOUR_GITHUB_REPO_URL html
+
+<!-- CLONE REPO -->
+cd /var/www
+sudo git clone YOUR_GITHUB_REPO_URL qa
+
+============================================================
+secure copy (scp) - Linux/Mac
+============================================================
+
+cd /home/ubuntu
+ls
+
+<!-- SEND FOLDER -->
+scp -r -i C:\aws\mykey.pem "C:\project" ubuntu@54.204.116.38:/home/ubuntu
+
+<!-- Upload website -->
+scp -r project ubuntu@server:/var/www/html
+
+<!-- Upload backup -->
+scp backup.tar.gz ubuntu@server:/home/ubuntu
+
+<!-- DOWNLOAD FILE FROM SERVER -->
+scp -i C:\aws\mykey.pem ubuntu@IP:/var/www/html/index.php .
+OR
+scp -i C:\aws\mykey.pem ubuntu@54.204.116.38:/home/ubuntu/test.txt .
+
+
+<!-- UPLOAD FILE TO SERVER -->
+scp -i C:\aws\mykey.pem test.php ubuntu@IP:/var/www/html
+
+<!-- MOVE FILE INTO WEBSITE -->
+sudo mv /home/ubuntu/test.php /var/www/html
+
+
+| Part | Meaning            |
+| ---- | ------------------ |
+| tar  | backup tool        |
+| -c   | create             |
+| -z   | compress gzip      |
+| -v   | verbose/show files |
+| -f   | filename           |
+
+
+
+<!-- BACKUP LEARNING - compressed -->
+tar -czvf nginx-backup.tar.gz /var/www/html
+
+<!-- RESTORE -->
+tar -xzvf nginx-backup.tar.gz
+
+
+<!-- DATABASE BACKUP (IMPORTANT FOR WORDPRESS) -->
+mysqldump -u root -p wordpress_db > backup.sql
+
+mysql -u root -p wordpress_db < backup.sql
+
+
+
+| Part         | Meaning         |
+| ------------ | --------------- |
+| mysqldump    | export database |
+| wordpress_db | db name         |
+| >            | save into file  |
+
+
+Then later learn:
+
+SSH
+Linux commands
+EC2 - Elastic Compute Cloud
+NGINX reverse proxy
+SSL
+PM2
+
+
+
+i've aws and i create instance for gui way, now i want to create a new instance via cui
+
+
+https://www.canva.com/design/DAGdKFQfYAw/7LGRplJK_aPDEqjQg9K0nQ/edit?utm_content=DAGdKFQfYAw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
+ 📌HTML, CSS Files
+https://www.canva.com/design/DAGdfr8-1JI/gY703s94UXZX5MUnywxK9w/edit?utm_content=DAGdfr8-1JI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
+
+
+
+i'm not understand, even i create site | Environment   | Meaning     |
+| ------------- | ----------- |
+| feature.local | development |
+| qa.local      | testing     |
+| uat.local     | approval    |
+| prod.local    | production  |
+ and one site inside 4 git branch, but kaise mai inhe ek dusre se sync karta
+
+
+
+
+ this is time consuming, first git, then aws, then somewhere else, i want to build pipeline or automated flow
+
+ developer deployment workflow
+
+That’s what your manager is pointing toward.
+
+
+
+
+
+
+
+
+
+“Strive not to be a success, but rather to be of value.”Albert Einstein
+
+
+
+
+
+
+
+
+
+UPDATE `sciwplg_users`
+SET `user_email` = CONCAT(`user_email`, '.invalid.com')
+WHERE `ID` = 2385;
+
+
+SELECT ID, user_login, user_email
+FROM `sciwplg_users`
+WHERE ID > 931
+  AND `user_email` NOT LIKE '%.invalid.in'
+  AND `user_email` NOT LIKE '%@yopmail.com'
+  AND `user_email` NOT LIKE '%@mailinator.com';
+
+
+
+ye queyr kya kar trhia hia 
+  SELECT 
+  MAX(CASE WHEN meta_key = 'nickname' THEN meta_value END) AS nickname,
+  MAX(CASE WHEN meta_key = 'approval_pending' THEN meta_value END) AS approval_pending,
+  MAX(CASE WHEN meta_key = 'population_size' THEN meta_value END) AS population_size,
+  MAX(CASE WHEN meta_key = 'country_primmary_info' THEN meta_value END) AS country_primmary_info,
+  MAX(CASE WHEN meta_key = 'parent_id' THEN meta_value END) AS parent_id,
+  MAX(CASE WHEN meta_key = 'current_membership_level_id' THEN meta_value END) AS current_membership_level_id
+FROM wp_usermeta
+WHERE user_id = 2261
+  AND meta_key IN (
+    'nickname',
+    'approval_pending',
+    'population_size',
+    'country_primmary_info',
+    'parent_id',
+    'current_membership_level_id'
+  );
+
+
+
+
+
+
+<!-- Monitoring -->
+Disk:      - df -h
+RAM:       - free -h
+Processes: - top
+           - htop
+Cron jobs: - crontab -e
+SSL:       - sudo certbot

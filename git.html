@@ -1,66 +1,74 @@
+<!-- install git graph extension and use them (youtube) -->
+ merdeg editor
+_________________________________________
+Git Local Repo - WRITE | ADD | COMMIT
+1. git init   - Working Directory
+2. git add    - Staging area
+3. git commit - Repo
+4. git push   - Github
+__________________________________________
+
+
+
+______________________________________________________________
+
+Git    - Software or VCS that Locally Managed project (code ka personal management)
+Github - Online services (web-based hosting service) to host git (for collobration)
+Gitlab - Online services (web-based hosting service)
+
+NOTE:
+    git ka pura infratecture object form me hota hia, har cheez ko object manta hia
+
+Untracked - Currently git not managed or track your file.
+Add       - Aware about your File (added or staged)
+Commit    - Now git tracked your file (Create Saved Checkpoint)
+_______________________________________________________________
+
+
+
 <!-- Git Setup -->
 git config --global user.name "Rahul Gupta TechCoopers"
 git config --global user.email "rahul.g@selectiva.io"
 
 
-<!-- Controls how Git handles line endings between: Windows (CRLF) OR Linux/Mac (LF) -->
-git config --global core.autocrlf "input"
-
+<!-- Bydefault, git code editor is vim -->
+git config --global core.editor "code --wait"
 
 <!-- Editing the value -->
 git config --global -e
 
-
-
 <!-- Check: -->
 git config --list
 
-_________________________________________
-<!-- Project Folder -->                 |
-mkdir my-website                        |
-cd my-website                           |
-                                        |
-<!-- Files Banao -->                    |
-touch index.html // not working         |
-OR                                      |
-New-Item index.html -ItemType File      |
-________________________________________|
-
-
-<!-- Check -->
-dir OR ls
-
-
-<!-- Git Initialize (First Time) -->
-git init
-
-
-<!-- Git Status -->
-git status
-
-<!-- To Know Current Stataus of Unstages and stages file -->
-git status -s
-
-
---------------------------------------------------------
-<!-- git ignore file - git understand file not exist -->
---------------------------------------------------------
-
-
-
-
-<!-- Staging -->
+<!-- Stage + Commit -->
 git add .
 OR
 git add index.html
 git add style.css
 
+git commit -m "Added QA header update"
 
-git commit -m "Initial production website"
+<!-- If you've already committed using your personal account -->
+git commit --amend --reset-author
 
 
-<!-- Main Branch Rename -->
-git branch -M main
+_________________________________________
+<!-- Project Folder -->                 |
+mkdir my-website                        |
+                                        |
+<!-- Files Banao -->                    |
+touch index.html // not working         |
+OR                                      |
+New-Item index.html -ItemType File      |
+                                        |
+New-Item .gitignore                     |
+New-Item .gitkeep //Untrack empty folder|
+________________________________________|
+
+
+<!-- To Know Current Stataus of Unstages and stages file -->
+git status -s
+
 
 
 <!-- Remote Connect -->
@@ -68,13 +76,8 @@ git remote add https://github.com/rahulg-ship-it/TechCoopers-Prod.git // not wor
 git remote add origin https://github.com/rahulg-ship-it/TechCoopers-Prod.git
 
 
-<!-- Check: -->
+<!-- Check: which repository the project is connected to -->
 git remote -v
-
-
-<!-- Push Production -->
-git push -u origin main
-
 
 _______________________________________________________
 <!-- Create QA Branch -->
@@ -84,45 +87,48 @@ git checkout -b qa
 <!-- Push -->
 git push -u origin qa
 
-
 <!-- UAT Branch -->
-git checkout main
 git checkout -b uat
 git push -u origin uat
 
-
 <!-- Feature Branch -->
 git checkout qa
-<!-- git pull origin feature/header-update -->
-git checkout -b feature/header-update
 
-
-<!-- If you want to cancel merge completely -->
-git status
-git merge --abort
-
-
-----------------------------------------------------------
-<!-- Professional Tip - Before merge -->
-git pull
-----------------------------------------------------------
-
-
-<!-- change in code -->
-<h2>Welcome to QA Testing</h2>
-
-
-<!-- Stage + Commit -->
-git add .
-git commit -m "Added QA header update"
-
+<!-- Pull Feature Branch -->
+git pull origin feature/header-update
 
 <!-- Push Feature Branch -->
 git push -u origin feature/header-update
 git push origin feature/header-update
 
 
+<!-- All Branch -->
+git branch -a
 
+<!-- New Branch -->
+git checkout -b new-branch
+or
+git branch new-branch
+
+<!-- Switch Branch -->
+git checkout branch-name
+or
+git switch branch-name
+
+<!-- Create + switch branch -->
+git checkout -b feature/header-update
+
+<!-- Create + switch branch directly (git keeps in memory)-->
+git switch -C feature/footer
+
+<!-- Branch List -->
+git branch
+
+<!-- Rename -->
+git branch -m <old-branch-name> <new-branch-name>
+
+<!-- Delete branch -->
+git branch -d branch-name
 
 ---------------------------------------------------
 FLOW - feature branch → QA → UAT → Production     |
@@ -138,63 +144,76 @@ git checkout uat
 git merge qa
 git push
 
+
 <!-- Merge UAT into Production -->
 git checkout main
 git merge uat
 git push
 
 
-
-
----------------------------------------------------
-USEFUL COMMANDS                                   |
----------------------------------------------------
-<!-- Branch List -->
-git branch
-
-<!-- All Branch -->
-git branch -a
-
-<!-- Switch Branch -->
-git checkout branch-name
-
-<!-- New Branch -->
-git checkout -b new-branch
-
-<!-- Delete branch -->
-git branch -d branch-name
-
 <!-- Merge -->
 git merge branch-name
 
-<!-- Pull Latest: -->
+
+============================================================
+| ------ Professional Tip - Before merge, pull code ------ |
+============================================================
+<!-- Pull latest code -->
+git pull origin main
+
+<!-- Release Prod - merge, add then commit -->
+git fetch
+OR
+<!-- Pull Latest: (Combination of fetch and merge)-->
 git pull
 
-<!-- Push -->
-git pull
+<!-- Push Production -->
+git push -u origin main
+----------------------------------------------------------
 
-<!-- Commit History OR Current Status of saved points-->
-<!-- To Know Current Status of Saved Point (Total Checkpoints)-->
-<!-- All Commit Histories -->
-git log --oneline
+<!-- Shows changes -->
+git diff
 
-<!-- Temporary Save OR Move these changes to QA/UAT-->
-git stash
+<!-- If you want to cancel merge completely -->
+git merge --abort
 
 
-<!-- Untracked files stash -->
-git stash push --include-untracked
+<!-- If you've made multiple local commits -->
+git rebase -i HEAD~5
 
-<!-- Restore OR Apply your saved changes-->
-git stash pop
+
+
+
+<!-- All Commit History - To Know Current Status of Saved Point -->
+git log (Full History)
+git log --oneline (Some short)
+git log --oneline --graph
+Atomic commits are a way to make sure that each commit is a self-contained unit of work (save point for one thing)
+
+
+<!-- Show the commit author -->
+git log --format=fuller -1
+
 
 <!-- Delete file -->
 del git.html
 
 
-<!-- HOTFIX PROCESS -->
+============================================================
+<!-- HOTFIX PROCESS - Production me urgent bug fix karna -->
 git checkout main
-git checkout -b hotfix/fix-css
+git pull origin main
+git checkout -b hotfix/fix-css // Create hotfix branch
+
+git add .
+git commit -m "Fix login issue"
+
+git push origin hotfix/login-issue
+
+git checkout main
+git merge hotfix/login-issue
+============================================================
+
 
 <!-- ROLLBACK -->
 git revert COMMIT_ID
@@ -202,18 +221,8 @@ git revert COMMIT_ID
 
 
 
-
-
-
-
-Untracked - Currently git not managed or track your file.
-Add - Aware about your File (added or staged)
-Commit - Now git tracked your file (Create Saved Checkpoint)
-
-
-
-
 <!-- Going Back to some previous saved points (undo commit) -->
+<!-- delete that particular part -->
 <!-- 1. Hard  - REMOVE OLD DATA FROM EVERYWHERE -->
 git reset --hard HEAD~1
 2. Soft  - 
@@ -222,45 +231,44 @@ git reset --hard HEAD~1
 
 
 
-
-| Feature              | QA Instance                                                | UAT Instance                                       |
-| -------------------- | ---------------------------------------------------------- | -------------------------------------------------- |
-| Full Form            | Quality Assurance                                          | User Acceptance Testing                            |
-| Purpose              | Developers/testers verify bugs, functionality, integration | Client/business users verify business requirements |
-| Who Uses It          | QA team, developers, testers                               | Client, product owner, business stakeholders       |
-| Focus                | Technical correctness                                      | Business correctness                               |
-| Testing Type         | Functional, regression, integration, automation            | Real-world user scenarios                          |
-| Data                 | Test or dummy data                                         | Production-like realistic data                     |
-| Stability            | Frequent changes                                           | More stable                                        |
-| Deployment Frequency | Often                                                      | Less frequent, controlled                          |
-| Goal                 | “Does it work correctly?”                                  | “Does it meet business needs?”                     |
+___________________________________________________________________
+<!-- Main Branch Rename: forcefully update current branch name --> |
+git branch -m <old-branch-name> <new-branch-name>                  |
+git branch -M <old-branch-name> <new-branch-name>                  |
+                                                                   |
+<!-- Command | Meaning         |                                   |
+| ---------- | --------------- |                                   |
+|    `-m`    | rename normally |                                   |
+|    `-M`    | force rename    | -->                               |
+___________________________________________________________________|
 
 
 
 
+<!-- 
+STASH - Hide my unfinished work in temporarily storage, urgent branch switching, temporary experiments
+Git blocks branch switching sometimes. (SOLUTION → STASH)
+working changes hidden safely -->
+git stash
+
+<!-- APPLY WITHOUT DELETE -->
+git stash apply
+
+<!-- Untracked files stash -->
+git stash push --include-untracked
+
+<!-- Restore stash OR Apply your saved changes -->
+git stash pop (unfinished work returns.)
+
+git stash list
 
 
 
--------------------------------------------------------
-Table-Level Backup Rollback
-CREATE TABLE wp_pmpro_memberships_users_backup AS
-SELECT * FROM wp_pmpro_memberships_users;
-
-Rollback:
-
-TRUNCATE TABLE wp_pmpro_memberships_users;
-INSERT INTO wp_pmpro_memberships_users
-SELECT * FROM wp_pmpro_memberships_users_backup;
+<!-- DELETE STASH -->
+git stash drop
+git stash clear
 
 
+<!-- WHEN TO USE STASH - unfinished work -->
 
 
-
-
-
---------------------------------------------------
-
-git branch -M main (WHAT DOES THIS COMMAND DO?)
-
-what is HOTFIX PROCESS in git
----------------------------------------------------

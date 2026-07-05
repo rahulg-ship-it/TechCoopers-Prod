@@ -1,15 +1,36 @@
-<!-- SSH Login command: -->
-ssh ubuntu@your-server-ip
+SSH (Secure Shell) - Secure Network Protocol - control remote terminal access
+    - Use Encryption technique for keep data secure and prvent hackers
+    - Facilates remote login
+    - work on client server model
+    - private key on client machine (system) and if its not available - you wont login, where as public key configure in server
+
+<!-- SSH Login command: ssh user@server_ip -->
+ssh ubuntu@YOUR_SERVER_IP
 ssh -i C:\Users\TC-User-Rahul\.ssh\id_ed25519_new ubuntu@3.140.197.255
+
+<!-- OR This connects to my AWS server terminal. -->
+ssh -i C:\aws\rahul-nginx-server-key.pem ubuntu@3.90.185.86
+
+<!-- check key exist or not -->
+dir .ssh
+ssh
+
+<!-- CHECK SERVER IP -->
+curl ifconfig.me
+
+<!-- SSH Key Pair (Public/Private Key) -->
+ssh-keygen -t rsa
+
+<!-- Transfer file in the remote server -->
+scp file.txt user@server_ip:/home/user/
 
 <!-- if permission issue -->
 icacls "C:\Users\TC-User-Rahul\.ssh\id_ed25519_new" /inheritance:r
 
+
 <!-- after login: -->
 ls
-cd /var/www/uat
 cd /var/www/design/public_html
-
 
 <!-- Database details (read-only purpose) -->
 cat wp-config.php | grep DB_
@@ -17,14 +38,71 @@ cat wp-config.php | grep DB_
 <!-- WordPress config: -->
 nano wp-config.php
 
+wp-config.php se credentials nikalne ke liye:
+
+<!-- wp-config.php se credentials nikalne ke liye: -->
+grep -i "DB_NAME\|DB_USER\|DB_PASSWORD" /var/www/design/public_html/wp-config.php
+
 <!-- MySQL open: -->
 mysql -u root -p
 OR
 mysql -u sci_designer -p
 OR
-mysql -u sci_designer -p Indb1234!@#$
+Indb1234!@#$
+mysql -u sci_designer -p Indb1234!@#$ (password)
+
+sciwplg_postmeta
+
+SELECT * FROM `sciwplg_sci_partnerships` WHERE `sf_id` = ''\G;
+SELECT * FROM `sciwplg_sci_partnerships` WHERE `sf_id` = '' limit 3\G;
+
+SELECT * FROM `sciwplg_sci_accounts` limit 3\G;
 
 
+
+SELECT * FROM `sciwplg_sf_accounts` WHERE `username` = 'DOVER_DE_US'\G;
+
+SELECT * FROM `sciwplg_location_lookup` WHERE `country_code` = 'US' AND `state_code` = 'DE' AND `city_name` IN (DOVER_DE_US'\G;
+
+SELECT * FROM sciwplg_location_lookup WHERE country_code = 'US' AND state_code = 'DE'  AND city_name LIKE 'DOV%'\G
+
+<!-- Pretty Formatting in Linux -->
+pager less -S;
+
+<!-- Exit pager -->
+nopager;
+
+mysql> SELECT * FROM `sciwplg_pmpro_memberships_users` WHERE `userBye
+
+SHOW DATABASES;
+SHOW TABLES;
+DESCRIBE wp_users; or DESC wp_users;
+
+SELECT * FROM `sciwplg_sf_accounts` WHERE `username` = 'DOVER_DE_US'\G;
+
+
+    NORTH_EAST_DELHI_DL_IN
+
+
+    SELECT 
+    account_name,
+    membership_expired,
+    sci_member,
+    is_membership_expired,
+    wordpress_user_id,
+
+    CASE 
+        WHEN sf_account_parent_id IS NOT NULL 
+             AND sf_account_parent_id != '' 
+        THEN sf_account_parent_id
+        ELSE sf_account_id
+    END AS final_account_id
+
+    FROM sciwplg_sf_accounts
+
+    WHERE wordpress_member_id = 2749;
+
+        
 <!-- If mysql denied: -->
 mysql -h DB_HOST -u DB_USER -p DB_NAME
 
@@ -42,75 +120,140 @@ SHOW TABLES;
 
 
 
- 
+
+| Command | Use               |
+| ------- | ----------------- |
+| pwd     | current folder    | Present working dir
+| ls      | show files        |
+| cd      | change folder     |
+| nano    | edit file         |
+| mkdir   | create folder     |
+| rm      | delete            |
+| cp      | copy              |
+| mv      | move/rename       |
+| history | previous commands |
+| chmod   | file permissions  |
+| sudo    | Admin privileges  |
 
 
-
-
-
-
-Ubuntu commands:
-pwd
-nano
-sudo - Super User
-grep
-chmod
-chown
-mysql DROP
-systemctl
-wp-cli
-
-
-MySQL commands
-WordPress wp-config.php
-FileZilla SFTP
-Apache/Nginx basics
-Permissions:
-
-
-<!-- Current location -->
-pwd
 
 <!-- Files list/permissions -->
-ls -la
+ls -l     #detailed list
+ls -a     #hidden files bhi
+ls -la    #detailed + hidden + permission
+ls -lh    #detailed + human readable size
 
-<!-- File edit -->
- nano filename.php
+<!-- drwxr-xr-x -->
+| Part | Meaning            |
+| ---- | ------------------ |
+| d    | directory          |
+| rwx  | owner permissions  |
+| r-x  | group permissions  |
+| r-x  | others permissions |
+
+| User   | Permission         |
+| ------ | ------------------ |
+| owner  | read write execute |
+| group  | read execute       |
+| others | read execute       |
+
+7 = rwx
+5 = r-x
+5 = r-x
 
 
+<!-- CHANGE OWNER - ubuntu becomes owner because ubuntu user has no write permission -->
+<!-- sudo chown user:user file -->
+sudo chown ubuntu:ubuntu /var/www/html
+OR
+sudo chown -R www-data:www-data /var/www/html
 
-<!-- check key exist or not -->
- dir .ssh
- ssh
+| Part   | Meaning     |
+| ------ | ----------- |
+| ubuntu | user owner  |
+| ubuntu | group owner |
+
+
+<!-- DIRECTORY PERMISSIONS -->
+sudo find /var/www/html -type d -exec chmod 755 {} \;
+
+<!-- FILE PERMISSIONS -->
+sudo find /var/www/html -type f -exec chmod 644 {} \;
+
+<!-- CHANGE PERMISSIONS -->
+<!-- sudo chmod 755 folder -->
+sudo chmod 755 /var/www/html
+
+<!-- sudo chmod 644 file -->
+sudo chmod 644 /var/www/design/public_html/wp-content/plugins/sci-feature-plugin/donor-wall.php
+
+<!-- after doing your work; permission wapas sahi karo -->
+sudo chown www-data:www-data /var/www/design/public_html/wp-content/plugins/sci-feature-plugin/donor-wall.php
+
+<!-- VERIFY PERMISSIONS -->
+ls -ld /var/www/html
+
+<!-- if different file location -->
+find /var/www -name wp-config.php
+
+
+<!-- Ye terminal sessions ko alive rakhte hain even if SSH disconnect ho jaye. -->
+<!-- Install Ubuntu/Debian -->
+sudo apt install tmux
+
+
+<!-- Create file -->
+touch test.txt
+
+<!-- Read file content. -->
+cat file.txt
+
+<!-- HOME FOLDER -->
+cd ~
+
+<!-- NEVER directly edit production without backup -->
+cp file.css file.css.backup
+
+<!-- database table backup -->
+mysqldump -u sci_designer -p sci_design sciwplg_posts sciwplg_sci_partnerships sciwplg_location_lookup > /var/www/design/public_html/wp-content/selectdesign_three_donar_tables_export.sql
+
+mysqldump -u sci_designer -p uat sciwplg_posts sciwplg_postmeta > /var/www/uat/wp-content/donor_wall_two_record_deleted.sql
+
+<!-- rename -->
+mv old.txt new.txt
+mv my-plugin my-plugin_old
+
+<!-- File editor -->
+nano filename.php
+
+
+<!-- EDIT HTML -->
+sudo nano index.nginx-debian.html
+
+
+<!-- Delete file -->
+rm file.txt
+rm -r folder
+rm -rf folder [DANGEROUS - Force delete EVERYTHING]
+
+<!-- DELETE WEBSITE -->
+sudo rm -r /var/www/html/*
+
+<!-- Shows previous commands -->
+history
+
+<!-- Shows: CPU, RAM, processes -->
+top
+
+<!-- Shows running processes -->
+ps aux
+
+<!-- kill -->
+kill PID
+
 
 
  
-
- <!-- if different file location -->
-  find /var/www -name wp-config.php
-
-
- group on india ceo ankur wariko
-
-
- ye puttygen, linux, github, ye sab kaise kisne banaya aur mai kyo nhi bna skta, future me mujhe kya best karna chahiye
-
- in my policy, check is it best for me and my familly, who will be cover and what exclude, how many chances to take a cover form company adn which cases and which may not, waht is ideal cover for me(26 yrs), sister(24 yrs), brother(20 yrs), mummy(43 yrs), papa(53 yrs), 
-
- what is ['Multiple Sclerosis;', 'Angioplasty', ' transient ischemic attack (TIA); Paralysis; Myocardial Infarction', 'RTA injury requiring 
-ventilation support.']
-
-1. Domiciliary Hospitalisation Excluded means, 
-2. For spouse only 0% co-pay for all claims. Copay is applicable on capped ailments also.
-3. Lucentis is covered upto Rs 50,000 Per family within the Sum Insured
-4. Day Care Procedures are Covered as per the standard list, so what are standard list
-5. Internal Congenital disease is covered and External congenital disease is covered in life threatning 
-situation.
-6. Pre-Post Natal Expenses to the limit of Rs 5000 is covered Within Maternity Limit
-7. 50% Co-Pay for cyberknife treatment/Stem Cell Transplantation. Cochlear Implant treatment shall be 
-restricted to 50% of the SI.
-8.  waht is opd, ipd
-
 
 
 
@@ -119,1022 +262,72 @@ restricted to 50% of the SI.
 
 __________________________________________________________________
 Note -
-1. Public key is in server, and private key in system.
+1. Public key is configure in server, and private key in client machine (system)
 2. if No private key, no login.
 __________________________________________________________________
 
 
+; → normal horizontal output
+\G → vertical output
 
 
 
+<!-- read some files/folders inside wp-content -->
+ sudo grep -RinF --exclude-dir={cache,uploads,node_modules,vendor} "logoutbtn" /path/to/wp-content
 
 
+| Flag            | Meaning             |
+| --------------- | ------------------- |
+| `sudo`          | Run as root         |
+| `-R`            | Recursive           |
+| `-i`            | Case-insensitive    |
+| `-n`            | Show line number    |
+| `-F`            | Fixed string search | faster/safer
+| `-E`            | Regex mode (`A\|B`) |
+| `--exclude-dir` | Skip huge folders   |
 
-__________________________________________________________________
-Query -
-<!-- FIND MEMBERSHIP DETAILS -->
-    SELECT * FROM `sciwplg_pmpro_memberships_users` WHERE `user_id` = 2697;
-
-
-<!-- FIND USER DETAILS -->
-    SELECT ID, user_login, user_email, FROM `sciwplg_users` WHERE `ID` = 2385;
-    SELECT ID, user_login, user_email FROM `sciwplg_users` WHERE `user_email` = 'cep-amuta@erc.org.il';
-
-    SELECT option_name, option_value FROM wp_options WHERE option_name IN ('siteurl','home');
-
-    stage.exploresv.org
 
-    SELECT * FROM wp_usermeta WHERE user_id = 2699 AND meta_key = 'membership_cancel_scheduled';
 
-    SELECT um.*
-FROM wp_usermeta um
-JOIN wp_users u ON um.user_id = u.ID
-WHERE u.user_login = 'ACCUSANTIUM_FL_US'
-AND um.meta_key = 'membership_cancel_scheduled';
 
-SELECT * FROM sciwplg_options WHERE option_name = 'scheduled_cancellation_queue';
+<!-- Temporarily disable plugins: -->
+wp plugin deactivate --all
 
-    ACCUSANTIUM_FL_US
-    exit
 
-    <!-- FIND USERNAME IN USERS TABLE -->
-    SELECT 
-        u.ID,
-        u.user_login,
-    FROM sciwplg_users
-    WHERE user_login IN (
-        'CCUSANTIUM_FL_US',
-        'BHOPAL_MP_IN',
-        'SALT_LAKE_CITY_UT_US',
-        'FACILIS_AUT_QUIA_DOL_AL_US',
-        'AGUA_DULCE_TX_US',
-        'BAGDARIN_BU_RU',
-        'WEST_VALLEY_CITY_UT_US',
-        'BALTIC_SD_US',
-        'SURAT_GJ_IN'
-    );
 
-    SELECT ID, user_login, user_email FROM `sciwplg_users` WHERE ID > 931 AND `user_email` NOT LIKE '%.invalid.in' AND `user_email` NOT LIKE '%@yopmail.com' AND `user_email` NOT LIKE '%@mailinator.com';
 
 
-<!-- Search ID from wp_user_id to pmpro sciwplg_pmpro_memberships_users -->
-SELECT mu.* FROM sciwplg_pmpro_memberships_users mu WHERE mu.user_id IN (SELECT ID FROM sciwplg_users WHERE user_login IN ('CCUSANTIUM_FL_US'));
 
 
-SELECT 
-    mu.user_id,
-    
-    u.user_login,
-    u.user_email,
 
-    mu.status,
-    DATE(mu.startdate) AS start_date,
-    DATE_FORMAT(mu.enddate, '%Y-%m-%d') AS end_date,
-    DATE_FORMAT(mu.modified, '%Y-%m-%d') AS modified
-FROM sciwplg_pmpro_memberships_users mu
-LEFT JOIN sciwplg_users u 
-    ON mu.user_id = u.ID
-WHERE mu.status = 'active'
-AND mu.user_id IN (
-    SELECT ID
-    FROM sciwplg_users
-    WHERE user_login IN (
-        'KEY_WEST_FL_US',
-        'SELLERSBURG_IN_US'
-    )
-) 
-ORDER BY `mu`.`user_id` ASC;
 
 
 
 
-SELECT 
-    u.user_login,
-    mu.membership_id,
-    mu.status,
 
-    DATE(mu.startdate) AS start_date,
-    DATE_FORMAT(mu.enddate, '%Y-%m-%d') AS end_date,
-    DATE_FORMAT(mu.modified, '%Y-%m-%d') AS modified
-FROM sciwplg_pmpro_memberships_users mu
-LEFT JOIN sciwplg_users u 
-    ON mu.user_id = u.ID
-WHERE mu.status = 'active'
-AND mu.user_id IN (
-    SELECT ID
-    FROM sciwplg_users
-    WHERE user_login IN (
-        'PAIA_HI_US',
-        'BHOPAL_MP_IN',
-        'SALT_LAKE_CITY_UT_US',
-        'FACILIS_AUT_QUIA_DOL_AL_US',
-        'AGUA_DULCE_TX_US',
-        'BAGDARIN_BU_RU',
-        'WEST_VALLEY_CITY_UT_US',
-        'BALTIC_SD_US',
-        'SURAT_GJ_IN'
-    )
-) 
-ORDER BY `mu`.`user_id` ASC;
-============================================
 
 
+SELECT * 
+FROM `sciwplg_pmpro_membership_orders` 
+WHERE `subscription_transaction_id` IS NOT NULL
+AND `subscription_transaction_id` != '';
 
-chatgpt
-short this query SELECT ID, user_login, user_email FROM `sciwplg_users` WHERE ID > 931 AND `user_email` NOT LIKE '%.invalid.in' AND `user_email` NOT LIKE '%@yopmail.com' AND `user_email` NOT LIKE '%@mailinator.com';
 
-I WANT TO KNOW - HOW MANY COLUMN IN THIS TABLE
 
 
 
 
-// WORKING CODE
-<!-- search -->
-grep -RinF "You've Been Invited to Access the Sister Cities Member Portal" /var/www/uat
-OR
+<!-- DOWNLOAD FILE -->
+wget URL
 
 
+<!-- CHECK PORTS -->
+sudo ss -tulpn
 
-​https://www.linkedin.com/in/jainn-sparsh will 
 
 
 
-cover https://arxiv.org/abs/2512.13564
-https://strava.app.link/0HpEujdg6Sb?utm_source=luma
-https://chat.whatsapp.com/HkrQ63lq2GYLkg0Y1RrprE?utm_source=luma
-https://www.linkedin.com/company/serena-run-club/?utm_source=luma
 
-<p class="">​<!-- -->🔗 Join our <a href="https://strava.app.link/0HpEujdg6Sb?utm_source=luma" target="_blank" rel="nofollow noopener">Strava community</a>, <a href="https://chat.whatsapp.com/HkrQ63lq2GYLkg0Y1RrprE?utm_source=luma" target="_blank" rel="nofollow noopener">WhatsApp group</a> and follow us on <a href="https://www.linkedin.com/company/serena-run-club/?utm_source=luma" target="_blank" rel="nofollow noopener">Linkedin</a>.</p>
 
 
 
 
-
-
-
-
-
-select id, user_id, membership_id, status, startdate,enddate,modified from sciwplg_pmpro_memberships_users where user_id = 2706
-
-
-
-
-
-
-sandeep mahaeshwari podcast
-wheel of spin 
-
-Get notes, resources, and updates: 👉 https://chat.whatsapp.com/D8300yFaV3HIKfxH0EWSao
-
-
-
-
-select id, user_id, membership_id, status, startdate,enddate,modified from wp_pmpro_memberships_users where user_id = 2709 and status='active';
-+------+---------+---------------+--------+---------------------+---------------------+---------------------+
-| id   | user_id | membership_id | status | startdate           | enddate             | modified            |
-+------+---------+---------------+--------+---------------------+---------------------+---------------------+
-| 3333 |    2709 |             2 | active | 2025-02-21 00:00:00 | 2026-05-19 00:00:00 | 2026-05-20 13:47:41 |
-| 3334 |    2709 |             3 | active | 2027-05-01 00:00:00 | 2028-07-31 00:00:00 | 2026-05-20 13:48:01 |
-+------+---------+---------------+--------+---------------------+---------------------+---------------------+
-2 rows in set (0.00 sec)
-
-mysql> client_loop: send disconnect: Connection reset
-
-mysql> select * from sciwplg_pmpro_memberships_users where user_id = 2703\G
-mysql> select * from sciwplg_pmpro_memberships_users where user_id = 2703 and status='active'\G
-mysql> select id, user_id, membership_id, status, startdate,enddate,modified from sciwplg_pmpro_memberships_users where user_id = 2706\G
-
-
-
-
-
-Vishwa Sir | upGrad
-
-
-
-
-
-
-SELECT 
-    pmu.user_id,
-    u.user_login,
-    u.user_email,
-    u.user_registered,
-
-    pmu.id AS membership_row_id,
-    pmu.membership_id,
-    pmu.status,
-    pmu.startdate,
-    pmu.enddate,
-    pmu.modified,
-
-    um.meta_key,
-    um.meta_value,
-
-    o.option_name,
-    o.option_value
-
-FROM sciwplg_pmpro_memberships_users pmu
-
-LEFT JOIN sciwplg_users u 
-    ON pmu.user_id = u.ID
-
-LEFT JOIN sciwplg_usermeta um 
-    ON pmu.user_id = um.user_id
-
-LEFT JOIN sciwplg_options o
-    ON o.option_value LIKE CONCAT('%', pmu.user_id, '%')
-
-WHERE pmu.status = 'active'
-
-AND pmu.user_id IN (
-    SELECT user_id
-    FROM sciwplg_pmpro_memberships_users
-    WHERE status = 'active'
-    GROUP BY user_id
-    HAVING COUNT(*) > 1
-)
-
-ORDER BY pmu.user_id;
-
-
-OR
-SELECT 
-    pmu.user_id,
-    u.user_login,
-    pmu.id AS membership_row_id,
-    pmu.membership_id,
-    pmu.status,
-    pmu.startdate,
-    pmu.enddate,
-    pmu.modified
-
-FROM sciwplg_pmpro_memberships_users pmu
-
-INNER JOIN (
-    SELECT user_id
-    FROM sciwplg_pmpro_memberships_users
-    WHERE status = 'active'
-    GROUP BY user_id
-    HAVING COUNT(*) > 1
-) dup
-ON pmu.user_id = dup.user_id
-
-LEFT JOIN sciwplg_users u 
-    ON pmu.user_id = u.ID
-
-WHERE pmu.status = 'active'
-
-ORDER BY pmu.user_id;
-
-
-
-
-
-
-
-Problem of LIKE '%value%' - Impact Very Slow explain
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- username me minimum 2 underscore hone chahiye -->
-SELECT 
-    pmu.user_id,
-    u.user_login AS username,
-    u.user_email,
-
-    pmu.id AS membership_user_row_id,
-    pmu.membership_id,
-    ml.name AS membership_name,
-
-    pmu.status AS membership_status, 
-    pmu.startdate,
-    pmu.enddate,
-    pmu.modified,
-
-    mo.id AS order_id,
-    mo.code AS order_code,
-    mo.total,
-    mo.payment_type,
-    mo.gateway,
-    mo.status AS payment_status,
-    mo.timestamp AS order_date,
-
-    /* Renewal Status */
-    CASE
-        WHEN mo.subscription_transaction_id IS NOT NULL 
-             OR mo.status = 'renewal'
-        THEN 'Yes'
-        ELSE 'No'
-    END AS renewal_status,
-
-    /* Export Status */
-    CASE
-        WHEN mo.status = 'success' 
-             AND (
-                    mo.subscription_transaction_id IS NOT NULL
-                    OR mo.notes LIKE '%Renewal%'
-                 )
-        THEN 'Paid (Renewal)'
-
-        WHEN mo.status = 'success'
-        THEN 'Paid'
-
-        WHEN mo.status = 'pending'
-             AND (
-                    mo.subscription_transaction_id IS NOT NULL
-                    OR mo.notes LIKE '%Renewal%'
-                 )
-        THEN 'Pending (Renewal)'
-
-        WHEN mo.status = 'pending'
-        THEN 'Pending'
-
-        ELSE mo.status
-    END AS export_status
-
-FROM sciwplg_pmpro_memberships_users pmu
-
-INNER JOIN sciwplg_users u
-    ON pmu.user_id = u.ID
-
-LEFT JOIN sciwplg_pmpro_membership_levels ml
-    ON pmu.membership_id = ml.id
-
-LEFT JOIN sciwplg_pmpro_membership_orders mo
-    ON pmu.user_id = mo.user_id
-    AND pmu.membership_id = mo.membership_id
-
-WHERE 
-    (
-        u.user_login LIKE '%\_%\_%' ESCAPE '\'
-    )
-
-    AND pmu.status IN (
-        'active',
-        'inactive',
-        'admin_cancelled',
-        'expired'
-    )
-
-ORDER BY 
-    pmu.user_id ASC,
-    mo.timestamp DESC;
-
-
-
-
-
-<!-- Agar sirf latest order chahiye per user + membership, toh ye optimized version use karo: -->
- LEFT JOIN (
-    SELECT *
-    FROM sciwplg_pmpro_membership_orders mo1
-    WHERE mo1.id = (
-        SELECT MAX(mo2.id)
-        FROM sciwplg_pmpro_membership_orders mo2
-        WHERE mo2.user_id = mo1.user_id
-          AND mo2.membership_id = mo1.membership_id
-    )
-) mo
-
-<!-- instead of: -->
- LEFT JOIN sciwplg_pmpro_membership_orders mo
-
-
-
-SELECT 
-    pmu.user_id,
-    u.user_login AS username,
-    u.user_email,
-
-    pmu.id AS membership_user_row_id,
-    pmu.membership_id,
-    ml.name AS membership_name,
-
-    pmu.status AS membership_status,
-    pmu.startdate,
-    pmu.enddate,
-    pmu.modified,
-
-    mo.id AS order_id,
-    mo.code AS order_code,
-    mo.total,
-    mo.payment_type,
-    mo.gateway,
-    mo.status AS payment_status,
-    mo.timestamp AS order_date,
-
-    /* Renewal Status */
-    CASE
-        WHEN mo.subscription_transaction_id IS NOT NULL
-        THEN 'Yes'
-        ELSE 'No'
-    END AS renewal_status,
-
-    /* Export Status */
-    CASE
-        WHEN mo.status = 'success'
-             AND mo.subscription_transaction_id IS NOT NULL
-        THEN 'Paid (Renewal)'
-
-        WHEN mo.status = 'success'
-        THEN 'Paid'
-
-        WHEN mo.status = 'pending'
-             AND mo.subscription_transaction_id IS NOT NULL
-        THEN 'Pending (Renewal)'
-
-        WHEN mo.status = 'pending'
-        THEN 'Pending'
-
-        ELSE mo.status
-    END AS export_status
-
-FROM sciwplg_pmpro_memberships_users pmu
-
-INNER JOIN sciwplg_users u
-    ON pmu.user_id = u.ID
-
-LEFT JOIN sciwplg_pmpro_membership_levels ml
-    ON pmu.membership_id = ml.id
-
-LEFT JOIN sciwplg_pmpro_membership_orders mo
-    ON pmu.user_id = mo.user_id
-    AND pmu.membership_id = mo.membership_id
-
-WHERE 
-    (
-        LENGTH(u.user_login)
-        - LENGTH(REPLACE(u.user_login, '_', ''))
-    ) >= 2
-
-    AND pmu.status IN (
-        'active',
-        'inactive',
-        'admin_cancelled',
-        'expired'
-    )
-
-ORDER BY 
-    pmu.user_id ASC,
-    mo.timestamp DESC;
-
-
-
-
-
-
-
-
-
-SELECT 
-    pmu.user_id,
-    u.user_login AS username,
-    u.user_email,
-
-    pmu.id AS membership_user_row_id,
-    pmu.membership_id,
-    ml.name AS membership_name,
-
-    pmu.status AS membership_status,
-    pmu.startdate,
-    pmu.enddate,
-    pmu.modified,
-
-    mo.id AS order_id,
-    mo.code AS order_code,
-    mo.total,
-    mo.payment_type,
-    mo.gateway,
-    mo.status AS payment_status,
-    mo.timestamp AS order_date,
-
-    /* Renewal Status */
-    CASE
-        WHEN EXISTS (
-            SELECT 1
-            FROM sciwplg_pmpro_membership_orders mo2
-            WHERE mo2.user_id = mo.user_id
-              AND mo2.membership_id = mo.membership_id
-              AND mo2.status = 'success'
-              AND mo2.id < mo.id
-        )
-        THEN 'Yes'
-        ELSE 'No'
-    END AS renewal_status,
-
-    /* Export Status */
-    CASE
-
-        WHEN mo.status = 'success'
-             AND EXISTS (
-                SELECT 1
-                FROM sciwplg_pmpro_membership_orders mo2
-                WHERE mo2.user_id = mo.user_id
-                  AND mo2.membership_id = mo.membership_id
-                  AND mo2.status = 'success'
-                  AND mo2.id < mo.id
-             )
-        THEN 'Paid (Renewal)'
-
-        WHEN mo.status = 'success'
-        THEN 'Paid'
-
-        WHEN mo.status = 'pending'
-             AND EXISTS (
-                SELECT 1
-                FROM sciwplg_pmpro_membership_orders mo2
-                WHERE mo2.user_id = mo.user_id
-                  AND mo2.membership_id = mo.membership_id
-                  AND mo2.status = 'success'
-                  AND mo2.id < mo.id
-             )
-        THEN 'Pending (Renewal)'
-
-        WHEN mo.status = 'pending'
-        THEN 'Pending'
-
-        ELSE mo.status
-
-    END AS export_status
-
-FROM sciwplg_pmpro_memberships_users pmu
-
-INNER JOIN sciwplg_users u
-    ON pmu.user_id = u.ID
-
-LEFT JOIN sciwplg_pmpro_membership_levels ml
-    ON pmu.membership_id = ml.id
-
-LEFT JOIN sciwplg_pmpro_membership_orders mo
-    ON pmu.user_id = mo.user_id
-    AND pmu.membership_id = mo.membership_id
-
-WHERE 
-    (
-        LENGTH(u.user_login)
-        - LENGTH(REPLACE(u.user_login, '_', ''))
-    ) >= 2
-
-    AND pmu.status IN (
-        'active',
-        'inactive',
-        'admin_cancelled',
-        'expired'
-    )
-
-ORDER BY 
-    pmu.user_id ASC,
-    mo.timestamp DESC;
-
-
-
-
-
-
-
-SELECT 
-    user_id,
-    COUNT(*) AS active_records
-FROM sciwplg_pmpro_memberships_users
-WHERE status = 'active'
-GROUP BY user_id
-HAVING COUNT(*) > 1 
-ORDER BY `sciwplg_pmpro_memberships_users`.`user_id` ASC
-
-
-SELECT 
-    u.ID AS user_id,
-    u.user_login AS user_name,
-    COUNT(*) AS active_records
-FROM sciwplg_pmpro_memberships_users pmu
-JOIN sciwplg_users u 
-    ON pmu.user_id = u.ID
-WHERE pmu.status = 'active'
-GROUP BY u.ID, u.user_login
-HAVING COUNT(*) > 1
-ORDER BY u.ID ASC;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-SELECT 
-    pmu.user_id,
-    u.user_login AS username,
-    u.user_email,
-
-    pmu.id AS membership_user_row_id,
-    pmu.membership_id,
-    ml.name AS membership_name,
-
-    pmu.status AS membership_status,
-    pmu.startdate,
-    pmu.enddate,
-    pmu.modified,
-
-    mo.id AS order_id,
-    mo.code AS order_code,
-    mo.total,
-    mo.payment_type,
-    mo.gateway,
-    mo.status AS payment_status,
-    mo.timestamp AS order_date,
-
-    /* Renewal Status */
-    CASE
-        WHEN mo.subscription_transaction_id IS NOT NULL
-        THEN 'Yes'
-        ELSE 'No'
-    END AS renewal_status,
-
-    /* Export Status */
-    CASE
-        WHEN mo.status = 'success'
-             AND mo.subscription_transaction_id IS NOT NULL
-        THEN 'Paid (Renewal)'
-
-        WHEN mo.status = 'success'
-        THEN 'Paid'
-
-        WHEN mo.status = 'pending'
-             AND mo.subscription_transaction_id IS NOT NULL
-        THEN 'Pending (Renewal)'
-
-        WHEN mo.status = 'pending'
-        THEN 'Pending'
-
-        ELSE mo.status
-    END AS export_status
-
-FROM sciwplg_pmpro_memberships_users pmu
-
-INNER JOIN sciwplg_users u
-    ON pmu.user_id = u.ID
-
-LEFT JOIN sciwplg_pmpro_membership_levels ml
-    ON pmu.membership_id = ml.id
-
-LEFT JOIN sciwplg_pmpro_membership_orders mo
-    ON pmu.user_id = mo.user_id
-    AND pmu.membership_id = mo.membership_id
-
-WHERE 
-    (
-        LENGTH(u.user_login)
-        - LENGTH(REPLACE(u.user_login, '_', ''))
-    ) >= 2
-
-    AND pmu.status IN (
-        'active',
-        'inactive',
-        'admin_cancelled',
-        'expired'
-    )
-
-ORDER BY 
-    pmu.user_id ASC,
-    mo.timestamp DESC;
-
-
-
-
-
-
-
-
-
-
-
-SELECT 
-    pmu.user_id,
-    u.user_login AS username,
-    u.user_email,
-
-    pmu.membership_id,
-    ml.name AS membership_name,
-
-    pmu.status AS membership_status,
-    pmu.startdate,
-    pmu.enddate,
-    pmu.modified,
-
-    mo.id AS order_id,
-    mo.code AS order_code,
-    mo.timestamp AS order_date,
-
-    /* Export Status */
-    CASE
-
-        WHEN mo.status = 'success'
-             AND EXISTS (
-                SELECT 1
-                FROM sciwplg_pmpro_membership_orders mo2
-                WHERE mo2.user_id = mo.user_id
-                  AND mo2.membership_id = mo.membership_id
-                  AND mo2.status = 'success'
-                  AND mo2.id < mo.id
-             )
-        THEN 'Paid (Renewal)'
-
-        WHEN mo.status = 'success'
-        THEN 'Paid'
-
-        WHEN mo.status = 'pending'
-             AND EXISTS (
-                SELECT 1
-                FROM sciwplg_pmpro_membership_orders mo2
-                WHERE mo2.user_id = mo.user_id
-                  AND mo2.membership_id = mo.membership_id
-                  AND mo2.status = 'success'
-                  AND mo2.id < mo.id
-             )
-        THEN 'Pending (Renewal)'
-
-        WHEN mo.status = 'pending'
-        THEN 'Pending'
-
-        ELSE mo.status
-
-    END AS payment_status,    
-
-    /* Renewal Status */
-    CASE
-        WHEN EXISTS (
-            SELECT 1
-            FROM sciwplg_pmpro_membership_orders mo2
-            WHERE mo2.user_id = mo.user_id
-              AND mo2.membership_id = mo.membership_id
-              AND mo2.status = 'success'
-              AND mo2.id < mo.id
-        )
-        THEN 'Yes'
-        ELSE 'No'
-    END AS renewal_status
-
-FROM sciwplg_pmpro_memberships_users pmu
-
-INNER JOIN sciwplg_users u
-    ON pmu.user_id = u.ID
-
-LEFT JOIN sciwplg_pmpro_membership_levels ml
-    ON pmu.membership_id = ml.id
-
-LEFT JOIN sciwplg_pmpro_membership_orders mo
-    ON pmu.user_id = mo.user_id
-    AND pmu.membership_id = mo.membership_id
-
-WHERE 
-    (
-        LENGTH(u.user_login)
-        - LENGTH(REPLACE(u.user_login, '_', ''))
-    ) >= 2
-
-    AND pmu.status IN (
-        'active',
-        'inactive',
-        'admin_cancelled',
-        'expired'
-    )
-
-ORDER BY 
-    mo.timestamp DESC;
-
-
-
-Optimized Query (same result)
-SELECT 
-    pmu.user_id,
-    u.user_login AS username,
-    u.user_email,
-
-    pmu.membership_id,
-    ml.name AS membership_name,
-
-    pmu.status AS membership_status,
-    pmu.startdate,
-    pmu.enddate,
-    pmu.modified,
-
-    mo.id AS order_id,
-    mo.code AS order_code,
-    mo.timestamp AS order_date,
-
-    CASE
-        WHEN mo.status = 'success' AND prev_success.has_previous = 1
-            THEN 'Paid (Renewal)'
-
-        WHEN mo.status = 'success'
-            THEN 'Paid'
-
-        WHEN mo.status = 'pending' AND prev_success.has_previous = 1
-            THEN 'Pending (Renewal)'
-
-        WHEN mo.status = 'pending'
-            THEN 'Pending'
-
-        ELSE mo.status
-    END AS payment_status,
-
-    CASE
-        WHEN prev_success.has_previous = 1
-            THEN 'Yes'
-        ELSE 'No'
-    END AS renewal_status
-
-FROM sciwplg_pmpro_memberships_users pmu
-
-INNER JOIN sciwplg_users u
-    ON pmu.user_id = u.ID
-
-LEFT JOIN sciwplg_pmpro_membership_levels ml
-    ON pmu.membership_id = ml.id
-
-LEFT JOIN sciwplg_pmpro_membership_orders mo
-    ON pmu.user_id = mo.user_id
-    AND pmu.membership_id = mo.membership_id
-
-LEFT JOIN (
-    SELECT 
-        mo1.id,
-        1 AS has_previous
-    FROM sciwplg_pmpro_membership_orders mo1
-    WHERE EXISTS (
-        SELECT 1
-        FROM sciwplg_pmpro_membership_orders mo2
-        WHERE mo2.user_id = mo1.user_id
-          AND mo2.membership_id = mo1.membership_id
-          AND mo2.status = 'success'
-          AND mo2.id < mo1.id
-    )
-) prev_success
-    ON mo.id = prev_success.id
-
-WHERE 
-    u.user_login LIKE '%\\_%\\_%'
-
-    AND pmu.status IN (
-        'active',
-        'inactive',
-        'admin_cancelled',
-        'expired'
-    )
-
-ORDER BY mo.timestamp DESC;
-
-
-
-
-
-
-
-
-
-
-
-
-ERROR 
-This reset link is invalid or expired.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Ms. Veena Swarup, Former Director (HR), Engineers India Ltd.
-Prof. Sanghamitra Buddhapriya, Dean & Campus Head – FORE School of Management, Gurugram
-Ms. Nina Chatrath, Independent Board Director – Oriental Hotels, Dwarikesh Sugar Ltd & Vision Spring
-Lieut. Dr. Rita Gangwani, Founder, RIGAHAUS – International Pageant Coach & Personality Transformation Expert, Honored by the World Book of Records
-
-
-
-Command to Add Location
-INSERT INTO `sciwplg_location_lookup` (`country_id`, `country_name`, `country_code`, `state_id`, `state_name`, `state_code`, `city_id`, `city_name`, `full_path`)
-VALUES ('248', 'Kosovo', 'XK', '5440', 'Peja', 'PJ', '157018', 'Peja', 'Peja, Peja, Kosovo');
-
-
-
-
-
-
-
-
-
-select `account_name`, `membership_start_date`, `sci_member`, `is_membership_expired`, `username`, `wordpress_member_id`, `wordpress_user_id` from sciwplg_sf_accounts where wordpress_member_id = 2727\G
-
-
-
-
-
-
-
-Dr. Sandeep Sovani (Global Head of GTM for Engineering Simulation on the Cloud, AWS) zeigt in seiner Keynote "How Customers are Benefiting from Running Their Simulations in AWS Cloud" auf der CADFEM Conference 2024
-
-
-Neu bei CADFEM: "BLUEPRINT – Der Digital Engineering Talk": https://resources.cadfem.net/de-de/blueprint-the-digital-engineering-talk
-
-Abonnieren Sie unseren Kanal: https://www.youtube.com/cadfem?sub_confirmation=1
-CADFEM Blog: https://blog.cadfem.net/de
-CADFEM Tech-Artikel: https://blog.cadfem.net/de/tag/tech-artikel
-CADFEM bei LinkedIn: https://www.linkedin.com/company/cadfem-germany/ 
-
-
-https://ronaldkah.de/
-
-
-
-For links to the prompts and tools, join the WhatsApp community: https://figuringoutai.co/fo514
-
-
-
-
-Trying to grow your Social Media? Talk to us - https://forms.gle/sJfksjy4K3rpNnvF9
-
-
-Check out Dhaval Sir's Channel: https://www.youtube.com/@codebasics
-➡️ Download Notes and CheatSheets: https://www.codewithharry.com/notes/
-
-
-
-
-
-
-
-
-
-
-
-
-
-INSERT INTO `sciwplg_location_lookup` (`country_id`, `country_name`, `country_code`, `state_id`, `state_name`, `state_code`, `city_id`, `city_name`, `full_path`) VALUES
-(233, 'United States', 'US', 1447, 'North Carolina', 'NC', 157058, 'Saluda', 'Saluda, North Carolina, United States'),
-(233, 'United States', 'US', 1440, 'Indiana', 'IN', 157059, 'Saluda', 'Saluda, Indiana, United States');
-
-
-
-
-
-
-
-
-544K views  Dec 27, 2025
-👉 Book a 1:1 coaching with Ipsita: https://topmate.io/helloipsita/2022421
-
-📣 Public Speaking video course: https://beingbeyond.in/products/8-techniques-to-overcome-fear-of-public-speaking
-
-❤️ Relationship card game - Lets Fix It: https://beingbeyond.in/products/lets-fix-it
-
-
-
-LinkedIn: https://www.linkedin.com/in/ipsita-das-983012284/
-
-
-
-
-
-
-
-
-Kashish choudhary english 
-
-
-📌How i learnt English without coaching 👇🏻
-https://youtu.be/GwDGyzzpSx4?si=W11fE8HXhx9bapsp
-
-📌50 + daily use english sentences 👇🏻
-https://youtu.be/X_zAUkT2tko?si=kNEKMJN35exh22_Y
