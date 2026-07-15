@@ -1066,15 +1066,20 @@ ORDER BY mo.timestamp DESC;
 
 
 
-
-
-
-
-
-
 <!-- Search ID from wp_user_id to pmpro sciwplg_pmpro_memberships_users -->
 SELECT mu.* FROM sciwplg_pmpro_memberships_users mu WHERE mu.user_id IN (SELECT ID FROM sciwplg_users WHERE user_login IN ('CCUSANTIUM_FL_US'));
 
+
+
+
+
+<!-- ---------------------- ORDER TABLE ------------------------ -->
+__________________________________________________________________
+
+SELECT * 
+    FROM `sciwplg_pmpro_membership_orders` 
+    WHERE `subscription_transaction_id` IS NOT NULL
+    AND `subscription_transaction_id` != '';
 
 
 
@@ -1169,6 +1174,34 @@ __________________________________________________________________
 
 <!-- ---------------------- SF ACCOUNT TABLE ------------------------ -->
 __________________________________________________________________
+<!-- Find details via username -->
+SELECT * FROM `sciwplg_sf_accounts` WHERE `username` = 'DOVER_DE_US'\G;
+
+
+
+<!-- Find usernames containing special characters [PARIS-CITY(FR)_IDF_FR] -->
+SELECT account_name, country, city, state, username, wordpress_member_id
+FROM sciwplg_sf_accounts
+WHERE username REGEXP '[^A-Z0-9_]';
+
+SELECT 
+    account_name,
+    membership_expired,
+    sci_member,
+    is_membership_expired,
+    wordpress_user_id,
+CASE 
+    WHEN sf_account_parent_id IS NOT NULL 
+            AND sf_account_parent_id != '' 
+    THEN sf_account_parent_id
+    ELSE sf_account_id
+END AS final_account_id
+
+FROM sciwplg_sf_accounts
+WHERE wordpress_member_id = 2749;
+
+
+
 <!-- Find Duplicate account_name -->
 SELECT 
     account_name,
@@ -1190,7 +1223,11 @@ __________________________________________________________________
     (233, 'United States', 'US', 1447, 'North Carolina', 'NC', 157058, 'Saluda', 'Saluda, North Carolina, United States'),
     (233, 'United States', 'US', 1440, 'Indiana', 'IN', 157059, 'Saluda', 'Saluda, Indiana, United States');
           
-
+    
+<!-- Search Username in Database (sciwplg_location_lookup) - for US, DE, DOVER_DE_US -->
+    SELECT * FROM `sciwplg_location_lookup` WHERE `country_code` = 'US' AND `state_code` = 'DE' AND `city_name` IN ('DOVER_DE_US')\G;
+    OR
+    SELECT * FROM sciwplg_location_lookup WHERE country_code = 'US' AND state_code = 'DE'  AND city_name LIKE 'DOV%'\G
 
 
 
@@ -1308,4 +1345,4 @@ Even senior developers sometimes use GUI tools:
 TablePlus
 DBeaver
 DataGrip
-phpMyAdmi
+phpMyAdmiN

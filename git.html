@@ -171,11 +171,16 @@ git pull
 git push -u origin main
 ----------------------------------------------------------
 
-<!-- Shows changes -->
-git diff
+<!-- Shows changes (in branch, files, commits) -->
+git diff (informative command as like git log)
 
 <!-- If you want to cancel merge completely -->
 git merge --abort
+
+
+
+<!-- Rebase:History Rewrite but not come commit message -->
+git rebase master
 
 
 <!-- If you've made multiple local commits -->
@@ -183,6 +188,8 @@ git rebase -i HEAD~5
 
 
 
+<!-- git reflog: all logs - commits, recover lost commit and changes -->
+command that shows you the history of your commits. it allows you to see the changes that you have made to your repository overtime.
 
 <!-- All Commit History - To Know Current Status of Saved Point -->
 git log (Full History)
@@ -231,6 +238,16 @@ git reset --hard HEAD~1
 
 
 
+
+<!-- git tag - as like sticky notes -->
+git tag
+git tag <tag-name> <commit-hash>
+
+<!-- create a annotated tag -->
+git tag -a <tag-name> -m "Release 1.0"
+
+
+
 ___________________________________________________________________
 <!-- Main Branch Rename: forcefully update current branch name --> |
 git branch -m <old-branch-name> <new-branch-name>                  |
@@ -250,15 +267,19 @@ STASH - Hide my unfinished work in temporarily storage, urgent branch switching,
 Git blocks branch switching sometimes. (SOLUTION → STASH)
 working changes hidden safely -->
 git stash
+git stash save "work in progress on X feature"
 
 <!-- APPLY WITHOUT DELETE -->
-git stash apply
+git stash apply (top wala stack aa jayega)
+git stash apply stash@{0} (particular stash ko used karna)
+
+git stash apply stash@{0} <branch-name> (appling stash to a specific branch)
 
 <!-- Untracked files stash -->
 git stash push --include-untracked
 
 <!-- Restore stash OR Apply your saved changes -->
-git stash pop (unfinished work returns.)
+git stash pop (unfinished work returns)
 
 git stash list
 
@@ -270,5 +291,8 @@ git stash clear
 
 
 <!-- WHEN TO USE STASH - unfinished work -->
+
+
+
 
 

@@ -4,12 +4,20 @@ SSH (Secure Shell) - Secure Network Protocol - control remote terminal access
     - work on client server model
     - private key on client machine (system) and if its not available - you wont login, where as public key configure in server
 
-<!-- SSH Login command: ssh user@server_ip -->
-ssh ubuntu@YOUR_SERVER_IP
-ssh -i C:\Users\TC-User-Rahul\.ssh\id_ed25519_new ubuntu@3.140.197.255
+Linux is not a complete OS. It is just a kernel.
+Kernel is the core of an operating system. It manages the system's resources and the communication between your hardware and software.
+The kernel is the core part of the operating system.
 
-<!-- OR This connects to my AWS server terminal. -->
+Ubuntu is built on Linux (Linux ≠ Ubuntu)
+
+Think of it like this:
+    Linux = Engine
+    Ubuntu = Car made using that engine
+
+
+<!-- Connects to MY AWS server terminal -->
 ssh -i C:\aws\rahul-nginx-server-key.pem ubuntu@3.90.185.86
+
 
 <!-- check key exist or not -->
 dir .ssh
@@ -28,6 +36,12 @@ scp file.txt user@server_ip:/home/user/
 icacls "C:\Users\TC-User-Rahul\.ssh\id_ed25519_new" /inheritance:r
 
 
+<!-- SSH Login command - SCI -->
+ssh ubuntu@YOUR_SERVER_IP
+ssh -i C:\Users\TC-User-Rahul\.ssh\id_ed25519_new ubuntu@3.140.197.255
+
+Indb1234!@#$
+
 <!-- after login: -->
 ls
 cd /var/www/design/public_html
@@ -35,72 +49,23 @@ cd /var/www/design/public_html
 <!-- Database details (read-only purpose) -->
 cat wp-config.php | grep DB_
 
-<!-- WordPress config: -->
-nano wp-config.php
-
-wp-config.php se credentials nikalne ke liye:
-
-<!-- wp-config.php se credentials nikalne ke liye: -->
+<!-- check credentials -->
 grep -i "DB_NAME\|DB_USER\|DB_PASSWORD" /var/www/design/public_html/wp-config.php
 
 <!-- MySQL open: -->
 mysql -u root -p
 OR
-mysql -u sci_designer -p
-OR
-Indb1234!@#$
-mysql -u sci_designer -p Indb1234!@#$ (password)
+mysql -u sci_designer -p Indb1234!@#$
 
-sciwplg_postmeta
-
-SELECT * FROM `sciwplg_sci_partnerships` WHERE `sf_id` = ''\G;
-SELECT * FROM `sciwplg_sci_partnerships` WHERE `sf_id` = '' limit 3\G;
-
-SELECT * FROM `sciwplg_sci_accounts` limit 3\G;
-
-
-
-SELECT * FROM `sciwplg_sf_accounts` WHERE `username` = 'DOVER_DE_US'\G;
-
-SELECT * FROM `sciwplg_location_lookup` WHERE `country_code` = 'US' AND `state_code` = 'DE' AND `city_name` IN (DOVER_DE_US'\G;
-
-SELECT * FROM sciwplg_location_lookup WHERE country_code = 'US' AND state_code = 'DE'  AND city_name LIKE 'DOV%'\G
-
-<!-- Pretty Formatting in Linux -->
-pager less -S;
-
-<!-- Exit pager -->
-nopager;
-
-mysql> SELECT * FROM `sciwplg_pmpro_memberships_users` WHERE `userBye
 
 SHOW DATABASES;
 SHOW TABLES;
-DESCRIBE wp_users; or DESC wp_users;
+USE your_db_name;
 
-SELECT * FROM `sciwplg_sf_accounts` WHERE `username` = 'DOVER_DE_US'\G;
+DESCRIBE wp_users;
+OR
+DESC wp_users;
 
-
-    NORTH_EAST_DELHI_DL_IN
-
-
-    SELECT 
-    account_name,
-    membership_expired,
-    sci_member,
-    is_membership_expired,
-    wordpress_user_id,
-
-    CASE 
-        WHEN sf_account_parent_id IS NOT NULL 
-             AND sf_account_parent_id != '' 
-        THEN sf_account_parent_id
-        ELSE sf_account_id
-    END AS final_account_id
-
-    FROM sciwplg_sf_accounts
-
-    WHERE wordpress_member_id = 2749;
 
         
 <!-- If mysql denied: -->
@@ -109,11 +74,6 @@ mysql -h DB_HOST -u DB_USER -p DB_NAME
 <!-- If mysql command fails -->
 sudo mysql
 
-
-
-SHOW DATABASES;
-USE your_db_name;
-SHOW TABLES;
 
 <!-- Cancel current command: -->
 \c
@@ -132,7 +92,7 @@ SHOW TABLES;
 | cp      | copy              |
 | mv      | move/rename       |
 | history | previous commands |
-| chmod   | file permissions  |
+| chmod   | file permissions  | modify
 | sudo    | Admin privileges  |
 
 
@@ -151,15 +111,16 @@ ls -lh    #detailed + human readable size
 | r-x  | group permissions  |
 | r-x  | others permissions |
 
-| User   | Permission         |
-| ------ | ------------------ |
-| owner  | read write execute |
-| group  | read execute       |
-| others | read execute       |
-
 7 = rwx
 5 = r-x
 5 = r-x
+
+| Permission  | Value |
+| ----------- | ----: |
+| Read (r)    |     4 |
+| Write (w)   |     2 |
+| Execute (x) |     1 |
+
 
 
 <!-- CHANGE OWNER - ubuntu becomes owner because ubuntu user has no write permission -->
@@ -174,6 +135,8 @@ sudo chown -R www-data:www-data /var/www/html
 | ubuntu | group owner |
 
 
+
+
 <!-- DIRECTORY PERMISSIONS -->
 sudo find /var/www/html -type d -exec chmod 755 {} \;
 
@@ -184,11 +147,47 @@ sudo find /var/www/html -type f -exec chmod 644 {} \;
 <!-- sudo chmod 755 folder -->
 sudo chmod 755 /var/www/html
 
+
+
 <!-- sudo chmod 644 file -->
 sudo chmod 644 /var/www/design/public_html/wp-content/plugins/sci-feature-plugin/donor-wall.php
 
 <!-- after doing your work; permission wapas sahi karo -->
 sudo chown www-data:www-data /var/www/design/public_html/wp-content/plugins/sci-feature-plugin/donor-wall.php
+
+
+
+
+<!-- Different Supported Number -->
+0 - No Permission
+1 - Execute Only
+2 - Write Only
+3 - 1+2
+4 - Read Only
+5 - 4+1
+6 - 4+2
+7 - 4+2+1
+
+
+chmod a+rwx file.txt
+chmod o+w file.txt (add write permission for other )
+chmod u+x file.txt (add executable permission for user)
+chmod u=rwx,g=rw,o=r file.txt
+u means user
+g means group
+o means other
+a means all
+
+
+<!-- add file permission inside the directory/folder -->
+chmod -R u+x mydir 
+
+
+
+
+
+
+
 
 <!-- VERIFY PERMISSIONS -->
 ls -ld /var/www/html
@@ -217,7 +216,21 @@ cp file.css file.css.backup
 <!-- database table backup -->
 mysqldump -u sci_designer -p sci_design sciwplg_posts sciwplg_sci_partnerships sciwplg_location_lookup > /var/www/design/public_html/wp-content/selectdesign_three_donar_tables_export.sql
 
+
 mysqldump -u sci_designer -p uat sciwplg_posts sciwplg_postmeta > /var/www/uat/wp-content/donor_wall_two_record_deleted.sql
+
+
+<!-- Backup database table (wp_users) before making any changes: -->
+cd /var/www/uat
+
+
+grep -E "DB_NAME|DB_USER|DB_HOST|table_prefix" wp-config.php
+
+mkdir -p ~/db-backups 
+or
+mysqldump -u DB_USER -p -h DB_HOST DB_NAME wp_users > ~/db-backups/wp_users_backup_$(date +%Y%m%d_%H%M%S).sql
+
+mysqldump -u sci_designer -p -h localhost uat sciwplg_users > ~/db-backups/sciwplg_users_backup_$(date +%Y%m%d_%H%M%S).sql
 
 <!-- rename -->
 mv old.txt new.txt
@@ -306,10 +319,6 @@ wp plugin deactivate --all
 
 
 
-SELECT * 
-FROM `sciwplg_pmpro_membership_orders` 
-WHERE `subscription_transaction_id` IS NOT NULL
-AND `subscription_transaction_id` != '';
 
 
 
@@ -331,3 +340,48 @@ sudo ss -tulpn
 
 
 
+
+
+
+
+
+
+<!-- Currently PHPMYADMIN Plugin Not Open to the Browser (Due to Permission Issue) -->
+<!-- 1. Find the config file -->
+find /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension -name "config.inc.php"
+
+2. ls -l /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension/lib/phpMyAdmin_5fz3Y2G6wisVdZbRnOXjerK/config.inc.php
+
+Before: 777 (-rwxrwxrwx) ❌ World writable (insecure)
+After: 644 (-rw-r--r--) ✅ Standard secure permission
+
+
+<!-- 3. Changing this file's permission to 644 - It only makes the file less permissive and is the recommended setting. -->
+    <!-- Step 1 (Safe): Backup the file (2 command in one time) -->
+    sudo cp /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension/lib/phpMyAdmin_5fz3Y2G6wisVdZbRnOXjerK/config.inc.php \
+    /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension/lib/phpMyAdmin_5fz3Y2G6wisVdZbRnOXjerK/config.inc.php.bak
+    
+    <!-- Step 2: Fix the permission -->
+    sudo chmod 644 /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension/lib/phpMyAdmin_5fz3Y2G6wisVdZbRnOXjerK/config.inc.php
+
+
+
+    ROLLBACK — matlab agar beech mein kahin bhi crash hua, sab DB changes revert ho jaate hain (all-or-nothing).
+
+
+
+
+
+
+    
+<!-- PATH -->
+/var/www/design/public_html/wp-content/plugins/sci-feature-plugin
+/var/www/uat/wp-content/plugins/sci-feature-plugin
+
+
+
+<!-- Pretty Formatting in Linux -->
+pager less -S;
+
+<!-- Exit pager -->
+nopager;
