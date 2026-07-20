@@ -608,6 +608,313 @@ ORDER BY
 
 
 
+<!-- 1. Membership Users Export Query -->
+SELECT
+    pmu.user_id,
+
+    u.user_login AS username,
+    u.user_email AS email,
+
+    fn.meta_value AS first_name,
+    ln.meta_value AS last_name,
+
+    cap.meta_value AS membership_role,
+
+    pmu.membership_id,
+
+    ml.name AS membership_name,
+
+    pmu.status,
+
+    pmu.startdate AS start_date,
+    pmu.enddate AS end_date,
+    pmu.modified AS modified_date
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+/* First Name */
+LEFT JOIN sciwplg_usermeta fn
+    ON fn.user_id = u.ID
+    AND fn.meta_key = 'first_name'
+
+/* Last Name */
+LEFT JOIN sciwplg_usermeta ln
+    ON ln.user_id = u.ID
+    AND ln.meta_key = 'last_name'
+
+/* User Role */
+LEFT JOIN sciwplg_usermeta cap
+    ON cap.user_id = u.ID
+    AND cap.meta_key = 'sciwplg_capabilities'
+
+WHERE
+    u.user_login LIKE '%\\_%\\_%'
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY pmu.modified DESC;
+
+<!-- 2. If you want only clean role name like: -->
+SELECT
+    u.ID AS user_id,
+    u.user_login AS username,
+    u.user_email AS email,
+    cap.meta_value AS membership_role
+FROM sciwplg_users u
+LEFT JOIN sciwplg_usermeta cap
+    ON cap.user_id = u.ID
+    AND cap.meta_key = 'sciwplg_capabilities'
+WHERE u.user_login LIKE '%\\_%\\_%';
+
+OR
+
+REPLACE(
+ REPLACE(
+  REPLACE(cap.meta_value,
+   'a:1:{s:',''),
+  '";b:1;}',''),
+ ':1',''
+) AS membership_role
+
+OR
+<!-- To 1st query me ye line replace karo with this: cap.meta_value AS membership_role -->
+SUBSTRING_INDEX(
+    SUBSTRING_INDEX(cap.meta_value, '"', 2),
+    '"',
+    -1
+) AS membership_role,
+
+
+<!-- Final Correct Membership Export Query -->
+SELECT
+    pmu.user_id,
+
+    u.user_login AS username,
+    u.user_email AS email,
+
+    fn.meta_value AS first_name,
+    ln.meta_value AS last_name,
+
+    SUBSTRING_INDEX(
+        SUBSTRING_INDEX(cap.meta_value, '"', 2),
+        '"',
+        -1
+    ) AS membership_role,
+
+    pmu.membership_id,
+
+    ml.name AS membership_name,
+
+    pmu.status,
+
+    pmu.startdate AS start_date,
+    pmu.enddate AS end_date,
+    pmu.modified AS modified_date
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+LEFT JOIN sciwplg_usermeta fn
+    ON fn.user_id = u.ID
+    AND fn.meta_key = 'first_name'
+
+LEFT JOIN sciwplg_usermeta ln
+    ON ln.user_id = u.ID
+    AND ln.meta_key = 'last_name'
+
+LEFT JOIN sciwplg_usermeta cap
+    ON cap.user_id = u.ID
+    AND cap.meta_key = 'sciwplg_capabilities'
+
+WHERE
+    u.user_login LIKE '%\\_%\\_%'
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY pmu.modified DESC;
+
+
+
+<!-- 3. Orders Export Query -->
+SELECT
+
+    mo.user_id,
+
+    u.user_login AS username,
+
+    mo.membership_id,
+
+    ml.name AS membership_name,
+
+    mo.id AS order_id,
+
+    mo.code AS order_code,
+
+    mo.timestamp AS order_date,
+
+    mo.gateway AS payment_method,
+
+    mo.total AS total_amount,
+
+    mo.status,
+
+    mo.timestamp,
+
+    mo.notes AS description,
+
+    CONCAT(
+        'Name: ', mo.billing_name, '\n',
+        'Street: ', mo.billing_street, '\n',
+        'City: ', mo.billing_city, '\n',
+        'State: ', mo.billing_state, '\n',
+        'ZIP: ', mo.billing_zip, '\n',
+        'Country: ', mo.billing_country, '\n',
+        'Phone: ', mo.billing_phone
+    ) AS billing_details,
+
+    CASE
+        WHEN mo.status = 'success'
+            THEN 'Paid'
+
+        WHEN mo.status = 'pending'
+            THEN 'Pending'
+
+        WHEN mo.status = 'cancelled'
+            THEN 'Cancelled'
+
+        WHEN mo.status = 'refunded'
+            THEN 'Refunded'
+
+        ELSE mo.status
+    END AS level
+
+FROM sciwplg_pmpro_membership_orders mo
+
+INNER JOIN sciwplg_users u
+    ON mo.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON mo.membership_id = ml.id
+
+WHERE
+    u.user_login LIKE '%\\_%\\_%'
+
+ORDER BY mo.timestamp DESC;
+
+OR
+
+SELECT
+
+    mo.user_id,
+
+    u.user_login AS username,
+
+    mo.membership_id,
+
+    ml.name AS membership_name,
+
+    mo.id AS order_id,
+
+    mo.code AS order_code,
+
+    mo.timestamp AS order_date,
+
+    mo.gateway AS payment_method,
+
+    mo.total AS total_amount,
+
+    mo.status,
+
+    mo.timestamp,
+
+    mo.notes AS description,
+
+    CONCAT(
+        'Name: ', mo.billing_name, '\n',
+        'Street: ', mo.billing_street, '\n',
+        'City: ', mo.billing_city, '\n',
+        'State: ', mo.billing_state, '\n',
+        'ZIP: ', mo.billing_zip, '\n',
+        'Country: ', mo.billing_country, '\n',
+        'Phone: ', mo.billing_phone
+    ) AS billing_details,
+
+    CASE
+        WHEN mo.status = 'success'
+             AND prev_success.has_previous = 1
+            THEN 'Paid (Renewal)'
+
+        WHEN mo.status = 'success'
+            THEN 'Paid'
+
+        WHEN mo.status = 'pending'
+             AND prev_success.has_previous = 1
+            THEN 'Pending (Renewal)'
+
+        WHEN mo.status = 'pending'
+            THEN 'Pending'
+
+        ELSE mo.status
+    END AS payment_status,
+
+    CASE
+        WHEN prev_success.has_previous = 1
+            THEN 'Yes'
+        ELSE 'No'
+    END AS renewal_status
+
+FROM sciwplg_pmpro_membership_orders mo
+
+INNER JOIN sciwplg_users u
+    ON mo.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON mo.membership_id = ml.id
+
+/* Renewal Check */
+LEFT JOIN (
+    SELECT
+        mo1.id,
+        1 AS has_previous
+    FROM sciwplg_pmpro_membership_orders mo1
+    WHERE EXISTS (
+        SELECT 1
+        FROM sciwplg_pmpro_membership_orders mo2
+        WHERE mo2.user_id = mo1.user_id
+          AND mo2.membership_id = mo1.membership_id
+          AND mo2.status = 'success'
+          AND mo2.id < mo1.id
+    )
+) prev_success
+    ON mo.id = prev_success.id
+
+WHERE
+    u.user_login LIKE '%\\_%\\_%'
+
+ORDER BY mo.timestamp DESC;
+
+
 
 
 <!-- Agar sirf latest order chahiye per user + membership, toh ye optimized version use karo: -->
@@ -1336,13 +1643,3 @@ WHERE p.post_type = 'sci_donor_wall'
 AND pm.post_id = 95622;
 
 ROLLBACK;
-
-
-
-
-
-Even senior developers sometimes use GUI tools:
-TablePlus
-DBeaver
-DataGrip
-phpMyAdmiN

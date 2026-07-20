@@ -1,5 +1,16 @@
-<!-- install git graph extension and use them (youtube) -->
- merdeg editor
+verson control - two type (centralized, distributed)
+
+
+Git Workflow
+1. Working Directory
+2. Staging Area
+3. Local Repository
+4. Remote Repository
+
+
+git me master branch ka naam - master
+and github me main hota hia
+
 _________________________________________
 Git Local Repo - WRITE | ADD | COMMIT
 1. git init   - Working Directory
@@ -8,11 +19,11 @@ Git Local Repo - WRITE | ADD | COMMIT
 4. git push   - Github
 __________________________________________
 
-
+tag se autocomplete ho jata hai
 
 ______________________________________________________________
 
-Git    - Software or VCS that Locally Managed project (code ka personal management)
+Git    - Software or Distributed VCS that Locally Managed project (code ka personal management) - Fast, Offline use
 Github - Online services (web-based hosting service) to host git (for collobration)
 Gitlab - Online services (web-based hosting service)
 
@@ -27,7 +38,7 @@ _______________________________________________________________
 
 
 <!-- Git Setup -->
-git config --global user.name "Rahul Gupta TechCoopers"
+git config --global user.name "Rahul Gupta"
 git config --global user.email "rahul.g@selectiva.io"
 
 
@@ -46,24 +57,39 @@ OR
 git add index.html
 git add style.css
 
+<!-- Unstaged -> Want to remove files in staging area -->
+git restore --staged style.css
+
 git commit -m "Added QA header update"
 
 <!-- If you've already committed using your personal account -->
 git commit --amend --reset-author
 
+Git empty folders ko track nahi karta. Agar aapke project mein koi folder abhi empty hai, lekin aap use repository mein rakhna chahte ho, toh us folder ke andar .gitkeep naam ki empty file bana dete hain.
+git not tracked empty directory - but you want to tract empty directory, so used .gitkeep
+
+1. one feature = one branch (every new feature - create new branch)
+2. use meaningful branch name
+3. Delete merged branch
+
+.gitignore generator – Automatically .gitignore file generate karta hai.
+
+Popular website: gitignore.io
 
 _________________________________________
-<!-- Project Folder -->                 |
-mkdir my-website                        |
-                                        |
-<!-- Files Banao -->                    |
-touch index.html // not working         |
-OR                                      |
-New-Item index.html -ItemType File      |
-                                        |
-New-Item .gitignore                     |
-New-Item .gitkeep //Untrack empty folder|
-________________________________________|
+<!-- Project Folder -->                  |
+mkdir my-website                         |
+                                         |
+<!-- Files Banao -->                     |
+touch index.html // not working          |
+touch uploads/index.html                 |
+OR                                       |
+New-Item index.html -ItemType File       |
+New-Item uploads/a.txt -ItemType File    |
+                                         |
+New-Item .gitignore                      |
+New-Item .gitkeep //Untrack empty folder |
+_________________________________________|
 
 
 <!-- To Know Current Stataus of Unstages and stages file -->
@@ -75,10 +101,15 @@ git status -s
 git remote add https://github.com/rahulg-ship-it/TechCoopers-Prod.git // not working
 git remote add origin https://github.com/rahulg-ship-it/TechCoopers-Prod.git
 
+origin - default nickname, which gave your remote repository
+
 
 <!-- Check: which repository the project is connected to -->
 git remote -v
 
+
+
+Branch - Main ki copy (branch is nothing more than a pointer to a commit)
 _______________________________________________________
 <!-- Create QA Branch -->
 git checkout main
@@ -99,8 +130,6 @@ git pull origin feature/header-update
 
 <!-- Push Feature Branch -->
 git push -u origin feature/header-update
-git push origin feature/header-update
-
 
 <!-- All Branch -->
 git branch -a
@@ -167,6 +196,10 @@ OR
 <!-- Pull Latest: (Combination of fetch and merge)-->
 git pull
 
+
+fetch - main code ko locally git repository me lata hai
+pull - main code ko locally git repository me lata hai aur working directory me merge bhi kar deta hai
+
 <!-- Push Production -->
 git push -u origin main
 ----------------------------------------------------------
@@ -179,7 +212,7 @@ git merge --abort
 
 
 
-<!-- Rebase:History Rewrite but not come commit message -->
+<!-- Rebase:History Rewrite but not come commit message - Use for avoid merge commit -->
 git rebase master
 
 
@@ -194,6 +227,7 @@ command that shows you the history of your commits. it allows you to see the cha
 <!-- All Commit History - To Know Current Status of Saved Point -->
 git log (Full History)
 git log --oneline (Some short)
+git log --oneline  -5
 git log --oneline --graph
 Atomic commits are a way to make sure that each commit is a self-contained unit of work (save point for one thing)
 
@@ -263,11 +297,14 @@ ___________________________________________________________________|
 
 
 <!-- 
-STASH - Hide my unfinished work in temporarily storage, urgent branch switching, temporary experiments
+STASH - Hide my unfinished work in temporarily storage, urgent branch switching, temporary experiments, saved multiple changes
 Git blocks branch switching sometimes. (SOLUTION → STASH)
 working changes hidden safely -->
 git stash
 git stash save "work in progress on X feature"
+
+<!-- Restore/remove from stash and show code in working directory - use apply instead of pop(Best-Apply)-->
+git stash pop (unfinished work returns)
 
 <!-- APPLY WITHOUT DELETE -->
 git stash apply (top wala stack aa jayega)
@@ -278,8 +315,7 @@ git stash apply stash@{0} <branch-name> (appling stash to a specific branch)
 <!-- Untracked files stash -->
 git stash push --include-untracked
 
-<!-- Restore stash OR Apply your saved changes -->
-git stash pop (unfinished work returns)
+
 
 git stash list
 
@@ -296,3 +332,21 @@ git stash clear
 
 
 
+
+
+
+Tags - Mark particular commit as a release.
+2 types - annotated tag and lightweight tag
+
+git tag -a v1.0 -m 'My release 1'
+git tag
+
+
+
+
+
+
+
+
+
+Fork = kisi dusre ke GitHub repository ki apni copy banana.
