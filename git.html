@@ -1,0 +1,352 @@
+verson control - two type (centralized, distributed)
+
+
+Git Workflow
+1. Working Directory
+2. Staging Area
+3. Local Repository
+4. Remote Repository
+
+
+git me master branch ka naam - master
+and github me main hota hia
+
+_________________________________________
+Git Local Repo - WRITE | ADD | COMMIT
+1. git init   - Working Directory
+2. git add    - Staging area
+3. git commit - Repo
+4. git push   - Github
+__________________________________________
+
+tag se autocomplete ho jata hai
+
+______________________________________________________________
+
+Git    - Software or Distributed VCS that Locally Managed project (code ka personal management) - Fast, Offline use
+Github - Online services (web-based hosting service) to host git (for collobration)
+Gitlab - Online services (web-based hosting service)
+
+NOTE:
+    git ka pura infratecture object form me hota hia, har cheez ko object manta hia
+
+Untracked - Currently git not managed or track your file.
+Add       - Aware about your File (added or staged)
+Commit    - Now git tracked your file (Create Saved Checkpoint)
+_______________________________________________________________
+
+
+
+<!-- Git Setup -->
+git config --global user.name "Rahul Gupta"
+git config --global user.email "rahul.g@selectiva.io"
+
+
+<!-- Bydefault, git code editor is vim -->
+git config --global core.editor "code --wait"
+
+<!-- Editing the value -->
+git config --global -e
+
+<!-- Check: -->
+git config --list
+
+<!-- Stage + Commit -->
+git add .
+OR
+git add index.html
+git add style.css
+
+<!-- Unstaged -> Want to remove files in staging area -->
+git restore --staged style.css
+
+git commit -m "Added QA header update"
+
+<!-- If you've already committed using your personal account -->
+git commit --amend --reset-author
+
+Git empty folders ko track nahi karta. Agar aapke project mein koi folder abhi empty hai, lekin aap use repository mein rakhna chahte ho, toh us folder ke andar .gitkeep naam ki empty file bana dete hain.
+git not tracked empty directory - but you want to tract empty directory, so used .gitkeep
+
+1. one feature = one branch (every new feature - create new branch)
+2. use meaningful branch name
+3. Delete merged branch
+
+.gitignore generator – Automatically .gitignore file generate karta hai.
+
+Popular website: gitignore.io
+
+_________________________________________
+<!-- Project Folder -->                  |
+mkdir my-website                         |
+                                         |
+<!-- Files Banao -->                     |
+touch index.html // not working          |
+touch uploads/index.html                 |
+OR                                       |
+New-Item index.html -ItemType File       |
+New-Item uploads/a.txt -ItemType File    |
+                                         |
+New-Item .gitignore                      |
+New-Item .gitkeep //Untrack empty folder |
+_________________________________________|
+
+
+<!-- To Know Current Stataus of Unstages and stages file -->
+git status -s
+
+
+
+<!-- Remote Connect -->
+git remote add https://github.com/rahulg-ship-it/TechCoopers-Prod.git // not working
+git remote add origin https://github.com/rahulg-ship-it/TechCoopers-Prod.git
+
+origin - default nickname, which gave your remote repository
+
+
+<!-- Check: which repository the project is connected to -->
+git remote -v
+
+
+
+Branch - Main ki copy (branch is nothing more than a pointer to a commit)
+_______________________________________________________
+<!-- Create QA Branch -->
+git checkout main
+git checkout -b qa
+
+<!-- Push -->
+git push -u origin qa
+
+<!-- UAT Branch -->
+git checkout -b uat
+git push -u origin uat
+
+<!-- Feature Branch -->
+git checkout qa
+
+<!-- Pull Feature Branch -->
+git pull origin feature/header-update
+
+<!-- Push Feature Branch -->
+git push -u origin feature/header-update
+
+<!-- All Branch -->
+git branch -a
+
+<!-- New Branch -->
+git checkout -b new-branch
+or
+git branch new-branch
+
+<!-- Switch Branch -->
+git checkout branch-name
+or
+git switch branch-name
+
+<!-- Create + switch branch -->
+git checkout -b feature/header-update
+
+<!-- Create + switch branch directly (git keeps in memory)-->
+git switch -C feature/footer
+
+<!-- Branch List -->
+git branch
+
+<!-- Rename -->
+git branch -m <old-branch-name> <new-branch-name>
+
+<!-- Delete branch -->
+git branch -d branch-name
+
+---------------------------------------------------
+FLOW - feature branch → QA → UAT → Production     |
+---------------------------------------------------
+<!-- Merge Feature into QA -->
+git checkout qa
+git merge feature/header-update
+git push
+
+
+<!-- Merge QA into UAT -->
+git checkout uat
+git merge qa
+git push
+
+
+<!-- Merge UAT into Production -->
+git checkout main
+git merge uat
+git push
+
+
+<!-- Merge -->
+git merge branch-name
+
+
+============================================================
+| ------ Professional Tip - Before merge, pull code ------ |
+============================================================
+<!-- Pull latest code -->
+git pull origin main
+
+<!-- Release Prod - merge, add then commit -->
+git fetch
+OR
+<!-- Pull Latest: (Combination of fetch and merge)-->
+git pull
+
+
+fetch - main code ko locally git repository me lata hai
+pull - main code ko locally git repository me lata hai aur working directory me merge bhi kar deta hai
+
+<!-- Push Production -->
+git push -u origin main
+----------------------------------------------------------
+
+<!-- Shows changes (in branch, files, commits) -->
+git diff (informative command as like git log)
+
+<!-- If you want to cancel merge completely -->
+git merge --abort
+
+
+
+<!-- Rebase:History Rewrite but not come commit message - Use for avoid merge commit -->
+git rebase master
+
+
+<!-- If you've made multiple local commits -->
+git rebase -i HEAD~5
+
+
+
+<!-- git reflog: all logs - commits, recover lost commit and changes -->
+command that shows you the history of your commits. it allows you to see the changes that you have made to your repository overtime.
+
+<!-- All Commit History - To Know Current Status of Saved Point -->
+git log (Full History)
+git log --oneline (Some short)
+git log --oneline  -5
+git log --oneline --graph
+Atomic commits are a way to make sure that each commit is a self-contained unit of work (save point for one thing)
+
+
+<!-- Show the commit author -->
+git log --format=fuller -1
+
+
+<!-- Delete file -->
+del git.html
+
+
+============================================================
+<!-- HOTFIX PROCESS - Production me urgent bug fix karna -->
+git checkout main
+git pull origin main
+git checkout -b hotfix/fix-css // Create hotfix branch
+
+git add .
+git commit -m "Fix login issue"
+
+git push origin hotfix/login-issue
+
+git checkout main
+git merge hotfix/login-issue
+============================================================
+
+
+<!-- ROLLBACK -->
+git revert COMMIT_ID
+
+
+
+
+<!-- Going Back to some previous saved points (undo commit) -->
+<!-- delete that particular part -->
+<!-- 1. Hard  - REMOVE OLD DATA FROM EVERYWHERE -->
+git reset --hard HEAD~1
+2. Soft  - 
+3. Mixed - 
+
+
+
+
+
+<!-- git tag - as like sticky notes -->
+git tag
+git tag <tag-name> <commit-hash>
+
+<!-- create a annotated tag -->
+git tag -a <tag-name> -m "Release 1.0"
+
+
+
+___________________________________________________________________
+<!-- Main Branch Rename: forcefully update current branch name --> |
+git branch -m <old-branch-name> <new-branch-name>                  |
+git branch -M <old-branch-name> <new-branch-name>                  |
+                                                                   |
+<!-- Command | Meaning         |                                   |
+| ---------- | --------------- |                                   |
+|    `-m`    | rename normally |                                   |
+|    `-M`    | force rename    | -->                               |
+___________________________________________________________________|
+
+
+
+
+<!-- 
+STASH - Hide my unfinished work in temporarily storage, urgent branch switching, temporary experiments, saved multiple changes
+Git blocks branch switching sometimes. (SOLUTION → STASH)
+working changes hidden safely -->
+git stash
+git stash save "work in progress on X feature"
+
+<!-- Restore/remove from stash and show code in working directory - use apply instead of pop(Best-Apply)-->
+git stash pop (unfinished work returns)
+
+<!-- APPLY WITHOUT DELETE -->
+git stash apply (top wala stack aa jayega)
+git stash apply stash@{0} (particular stash ko used karna)
+
+git stash apply stash@{0} <branch-name> (appling stash to a specific branch)
+
+<!-- Untracked files stash -->
+git stash push --include-untracked
+
+
+
+git stash list
+
+
+
+<!-- DELETE STASH -->
+git stash drop
+git stash clear
+
+
+<!-- WHEN TO USE STASH - unfinished work -->
+
+
+
+
+
+
+
+
+Tags - Mark particular commit as a release.
+2 types - annotated tag and lightweight tag
+
+git tag -a v1.0 -m 'My release 1'
+git tag
+
+
+
+
+
+
+
+
+
+Fork = kisi dusre ke GitHub repository ki apni copy banana
