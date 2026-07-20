@@ -1,0 +1,434 @@
+SSH (Secure Shell) - Secure Network Protocol - control remote terminal access
+    - Use Encryption technique for keep data secure and prvent hackers
+    - Facilates remote login
+    - work on client server model
+    - private key on client machine (system) and if its not available - you wont login, where as public key configure in server
+
+Linux is not a complete OS. It is just a kernel.
+Kernel is the core of an operating system. It manages the system's resources and the communication between your hardware and software.
+The kernel is the core part of the operating system.
+
+Ubuntu is built on Linux (Linux ≠ Ubuntu)
+
+Think of it like this:
+    Linux = Engine
+    Ubuntu = Car made using that engine
+
+
+<!-- Connects to MY AWS server terminal -->
+ssh -i C:\aws\rahul-nginx-server-key.pem ubuntu@3.90.185.86
+
+
+<!-- check key exist or not -->
+dir .ssh
+ssh
+
+<!-- CHECK SERVER IP -->
+curl ifconfig.me
+
+<!-- SSH Key Pair (Public/Private Key) -->
+ssh-keygen -t rsa
+
+<!-- Transfer file in the remote server -->
+scp file.txt user@server_ip:/home/user/
+
+<!-- if permission issue -->
+icacls "C:\Users\TC-User-Rahul\.ssh\id_ed25519_new" /inheritance:r
+
+
+<!-- SSH Login command - SCI -->
+ssh ubuntu@YOUR_SERVER_IP
+ssh -i C:\Users\TC-User-Rahul\.ssh\id_ed25519_new ubuntu@3.140.197.255
+
+Indb1234!@#$
+
+<!-- after login: -->
+ls
+cd /var/www/design/public_html
+
+<!-- Database details (read-only purpose) -->
+cat wp-config.php | grep DB_
+
+<!-- check credentials -->
+grep -i "DB_NAME\|DB_USER\|DB_PASSWORD" /var/www/design/public_html/wp-config.php
+
+<!-- MySQL open: -->
+mysql -u root -p
+OR
+mysql -u sci_designer -p Indb1234!@#$
+
+
+SHOW DATABASES;
+SHOW TABLES;
+USE your_db_name;
+
+DESCRIBE wp_users;
+OR
+DESC wp_users;
+
+
+        
+<!-- If mysql denied: -->
+mysql -h DB_HOST -u DB_USER -p DB_NAME
+
+<!-- If mysql command fails -->
+sudo mysql
+
+
+<!-- Cancel current command: -->
+\c
+
+
+
+
+| Command | Use               |
+| ------- | ----------------- |
+| pwd     | current folder    | Present working dir
+| ls      | show files        |
+| cd      | change folder     |
+| nano    | edit file         |
+| mkdir   | create folder     |
+| rm      | delete            |
+| cp      | copy              |
+| mv      | move/rename       |
+| history | previous commands |
+| chmod   | file permissions  | modify
+| sudo    | Admin privileges  |
+
+
+
+<!-- Files list/permissions -->
+ls -l     #detailed list
+ls -a     #hidden files bhi
+ls -la    #detailed + hidden + permission
+ls -lh    #detailed + human readable size
+
+<!-- drwxr-xr-x -->
+| Part | Meaning            |
+| ---- | ------------------ |
+| d    | directory          |
+| rwx  | owner permissions  |
+| r-x  | group permissions  |
+| r-x  | others permissions |
+
+7 = rwx
+5 = r-x
+5 = r-x
+
+| Permission  | Value |
+| ----------- | ----: |
+| Read (r)    |     4 |
+| Write (w)   |     2 |
+| Execute (x) |     1 |
+
+
+
+<!-- CHANGE OWNER - ubuntu becomes owner because ubuntu user has no write permission -->
+<!-- sudo chown user:user file -->
+sudo chown ubuntu:ubuntu /var/www/html
+OR
+sudo chown -R www-data:www-data /var/www/html
+
+| Part   | Meaning     |
+| ------ | ----------- |
+| ubuntu | user owner  |
+| ubuntu | group owner |
+
+
+
+
+<!-- DIRECTORY PERMISSIONS -->
+sudo find /var/www/html -type d -exec chmod 755 {} \;
+
+<!-- FILE PERMISSIONS -->
+sudo find /var/www/html -type f -exec chmod 644 {} \;
+
+<!-- CHANGE PERMISSIONS -->
+<!-- sudo chmod 755 folder -->
+sudo chmod 755 /var/www/html
+
+
+
+<!-- sudo chmod 644 file -->
+sudo chmod 644 /var/www/design/public_html/wp-content/plugins/sci-feature-plugin/donor-wall.php
+
+<!-- after doing your work; permission wapas sahi karo -->
+sudo chown www-data:www-data /var/www/design/public_html/wp-content/plugins/sci-feature-plugin/donor-wall.php
+
+
+
+
+<!-- Different Supported Number -->
+0 - No Permission
+1 - Execute Only
+2 - Write Only
+3 - 1+2
+4 - Read Only
+5 - 4+1
+6 - 4+2
+7 - 4+2+1
+
+
+chmod a+rwx file.txt
+chmod o+w file.txt (add write permission for other )
+chmod u+x file.txt (add executable permission for user)
+chmod u=rwx,g=rw,o=r file.txt
+u means user
+g means group
+o means other
+a means all
+
+
+<!-- add file permission inside the directory/folder -->
+chmod -R u+x mydir 
+
+
+
+
+
+
+
+
+<!-- VERIFY PERMISSIONS -->
+ls -ld /var/www/html
+
+<!-- if different file location -->
+find /var/www -name wp-config.php
+
+
+<!-- Ye terminal sessions ko alive rakhte hain even if SSH disconnect ho jaye. -->
+<!-- Install Ubuntu/Debian -->
+sudo apt install tmux
+
+
+<!-- Create file -->
+touch test.txt
+
+<!-- Read file content. -->
+cat file.txt
+
+<!-- HOME FOLDER -->
+cd ~
+
+<!-- NEVER directly edit production without backup -->
+cp file.css file.css.backup
+
+<!-- database table backup -->
+mysqldump -u sci_designer -p sci_design sciwplg_posts sciwplg_sci_partnerships sciwplg_location_lookup > /var/www/design/public_html/wp-content/selectdesign_three_donar_tables_export.sql
+
+
+mysqldump -u sci_designer -p uat sciwplg_posts sciwplg_postmeta > /var/www/uat/wp-content/donor_wall_two_record_deleted.sql
+
+
+<!-- Backup database table (wp_users) before making any changes: -->
+cd /var/www/uat
+
+
+grep -E "DB_NAME|DB_USER|DB_HOST|table_prefix" wp-config.php
+
+mkdir -p ~/db-backups 
+or
+mysqldump -u DB_USER -p -h DB_HOST DB_NAME wp_users > ~/db-backups/wp_users_backup_$(date +%Y%m%d_%H%M%S).sql
+
+mysqldump -u sci_designer -p -h localhost uat sciwplg_users > ~/db-backups/sciwplg_users_backup_$(date +%Y%m%d_%H%M%S).sql
+
+<!-- rename -->
+mv old.txt new.txt
+mv my-plugin my-plugin_old
+
+<!-- File editor -->
+nano filename.php
+
+
+<!-- EDIT HTML -->
+sudo nano index.nginx-debian.html
+
+
+<!-- Delete file -->
+rm file.txt
+rm -r folder
+rm -rf folder [DANGEROUS - Force delete EVERYTHING]
+
+rm 10-July-2026-rahul-test-log.log 13-July-2026-rahul-test-log.log
+
+<!-- DELETE WEBSITE -->
+sudo rm -r /var/www/html/*
+
+<!-- Shows previous commands -->
+history
+
+<!-- Shows: CPU, RAM, processes -->
+top
+
+<!-- Shows running processes -->
+ps aux
+
+<!-- kill -->
+kill PID
+
+
+
+ 
+
+
+
+
+
+
+__________________________________________________________________
+Note -
+1. Public key is configure in server, and private key in client machine (system)
+2. if No private key, no login.
+__________________________________________________________________
+
+
+; → normal horizontal output
+\G → vertical output
+
+
+
+<!-- read some files/folders inside wp-content -->
+ sudo grep -RinF --exclude-dir={cache,uploads,node_modules,vendor} "logoutbtn" /path/to/wp-content
+
+
+| Flag            | Meaning             |
+| --------------- | ------------------- |
+| `sudo`          | Run as root         |
+| `-R`            | Recursive           |
+| `-i`            | Case-insensitive    |
+| `-n`            | Show line number    |
+| `-F`            | Fixed string search | faster/safer
+| `-E`            | Regex mode (`A\|B`) |
+| `--exclude-dir` | Skip huge folders   |
+
+
+
+
+<!-- Temporarily disable plugins: -->
+wp plugin deactivate --all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- DOWNLOAD FILE -->
+wget URL
+
+
+<!-- CHECK PORTS -->
+sudo ss -tulpn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Currently PHPMYADMIN Plugin Not Open to the Browser (Due to Permission Issue) -->
+<!-- 1. Find the config file -->
+find /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension -name "config.inc.php"
+
+2. ls -l /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension/lib/phpMyAdmin_5fz3Y2G6wisVdZbRnOXjerK/config.inc.php
+
+Before: 777 (-rwxrwxrwx) ❌ World writable (insecure)
+After: 644 (-rw-r--r--) ✅ Standard secure permission
+
+
+<!-- 3. Changing this file's permission to 644 - It only makes the file less permissive and is the recommended setting. -->
+    <!-- Step 1 (Safe): Backup the file (2 command in one time) -->
+    sudo cp /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension/lib/phpMyAdmin_5fz3Y2G6wisVdZbRnOXjerK/config.inc.php \
+    /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension/lib/phpMyAdmin_5fz3Y2G6wisVdZbRnOXjerK/config.inc.php.bak
+    
+    <!-- Step 2: Fix the permission -->
+    sudo chmod 644 /var/www/design/public_html/wp-content/plugins/wp-phpmyadmin-extension/lib/phpMyAdmin_5fz3Y2G6wisVdZbRnOXjerK/config.inc.php
+
+
+
+    ROLLBACK — matlab agar beech mein kahin bhi crash hua, sab DB changes revert ho jaate hain (all-or-nothing).
+
+
+
+
+
+
+    
+<!-- PATH -->
+/var/www/design/public_html/wp-content/plugins/sci-feature-plugin
+/var/www/uat/wp-content/plugins/sci-feature-plugin
+
+
+
+
+
+
+
+<!-- Step 1: Verify the files exist -->
+cd /var/www/design/public_html/wp-content
+
+ls -lh 10-July-2026-rahul-test-log.log 13-July-2026-rahul-test-log.log
+
+
+<!-- Verify they are deleted -->
+ls | grep "July-2026-rahul-test-log"
+
+<!-- Pretty Formatting in Linux -->
+pager less -S;
+
+<!-- Exit pager -->
+nopager;
+
+
+
+
+
+
+
+Youtube
+AIM Network
+Abhinav Kejriwal
+
+
+
+
+
+Jeneesha Singh is an alumna of the first cohort of Masters’ Union. Besides co-founding a startup called Shield-Air, she was one of Bain’s first Masters’ Union recruits. 
+
+bain
+yes bank
+
+
+
+Linkedin
+
+📲 Connect with Shashank
+LinkedIn: https://www.linkedin.com/in/ishashank1/
+Instagram: https://www.instagram.com/thatsalariedguy/
+
+🎙 Follow the Guests
+Ashish Kashyap (INDmoney): https://www.linkedin.com/in/ashishkashyap/
+Mohit Gorisariya (SalarySe): https://www.linkedin.com/in/mohit-gorisariya-77b48215/
+Nikhil Aggarwal (Grip): https://www.linkedin.com/in/nikhil-aggarwal103/

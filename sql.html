@@ -1,0 +1,1645 @@
+
+
+
+-------------------------------------------------------
+<!-- Backup Rollback -->
+
+<!-- Original table ka snapshot/save point with full structure -->
+CREATE TABLE wp_pmpro_memberships_users_backup 
+LIKE wp_pmpro_memberships_users;
+
+<!-- Copy all data into backup table -->
+INSERT INTO wp_pmpro_memberships_users_backup
+SELECT * FROM wp_pmpro_memberships_users;
+
+
+<!-- Rollback: -->
+
+<!-- Remove current data -->
+TRUNCATE TABLE wp_pmpro_memberships_users;
+
+<!-- Restore data from backup -->
+INSERT INTO wp_pmpro_memberships_users
+SELECT * FROM wp_pmpro_memberships_users_backup;
+--------------------------------------------------
+
+
+
+
+
+
+
+<!-- ---------------------- MEMBERSHIP TABLE ------------------------ -->
+__________________________________________________________________
+<!-- FIND MEMBERSHIP ALL DETAILS -->
+    SELECT * FROM `sciwplg_pmpro_memberships_users` WHERE `user_id` = 2815;
+    
+<!-- FIND MEMBERSHIP SPECIFIC DETAILS -->
+    SELECT id, membership_id, status, startdate, enddate, modified FROM `sciwplg_pmpro_memberships_users` WHERE `user_id` = 2815;
+
+    
+<!-- FIND ACTIVE MEMBERSHIP DETAILS -->
+select id, user_id, membership_id, status, startdate,enddate,modified from wp_pmpro_memberships_users where user_id = 2709 and status='active'\G
+    
+
+<!-- FIND DUPLICATE ACTIVE MEMBERSHIP DETAILS -->
+    SELECT user_id, COUNT(*)
+        FROM wp_pmpro_memberships_users
+    WHERE status='active'
+        GROUP BY user_id
+    HAVING COUNT(*) > 1;
+
+
+
+
+<!-- find all users who have more than one active membership record -->
+ SELECT 
+    user_id,
+    COUNT(*) AS active_records
+FROM wp_pmpro_memberships_users
+WHERE status = 'active'
+GROUP BY user_id
+HAVING COUNT(*) > 1;
+
+
+SELECT 
+    pmu.user_id,
+    u.user_login,
+    u.user_email,
+    COUNT(*) AS active_memberships
+FROM wp_pmpro_memberships_users pmu
+JOIN wp_users u 
+    ON pmu.user_id = u.ID
+WHERE pmu.status = 'active'
+GROUP BY pmu.user_id
+HAVING COUNT(*) > 1;
+
+
+
+SELECT 
+    pmu.user_id,
+    u.user_login,
+    u.user_email,
+    COUNT(*) AS active_records
+FROM wp_pmpro_memberships_users pmu
+
+JOIN wp_users u 
+    ON pmu.user_id = u.ID
+
+WHERE pmu.status = 'active'
+
+GROUP BY pmu.user_id
+
+HAVING COUNT(*) > 1;
+
+
+
+<!-- FIND ACTIVE PRIMARY CONTACT DETAILS -->
+SELECT 
+    pmu.id,
+    pmu.user_id,
+
+    u.user_login AS user_name,
+    u.user_email,
+
+    pmu.membership_id,
+    pml.name AS membership_name,
+
+    pmu.initial_payment,
+    pmu.status,
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+LEFT JOIN sciwplg_users u 
+    ON u.ID = pmu.user_id
+
+LEFT JOIN sciwplg_pmpro_membership_levels pml
+    ON pml.id = pmu.membership_id
+
+WHERE 
+    u.user_login LIKE '%_%'
+
+
+
+
+
+
+
+
+
+
+SELECT 
+    u.ID,
+    u.user_login,
+    u.user_email,
+    
+    CASE
+        WHEN um.meta_value LIKE '%"primary_contact"%'
+            THEN 'Primary Contact'
+
+        WHEN um.meta_value LIKE '%"secondary_contact"%'
+            THEN 'Secondary Contact'
+
+        WHEN um.meta_value LIKE '%"voting_delegate"%'
+            THEN 'Voting Delegate'
+
+        ELSE 'Other'
+    END AS user_role,
+
+    CASE
+        WHEN (
+            LENGTH(u.user_login)
+            - LENGTH(REPLACE(u.user_login, '_', ''))
+        ) >= 2
+        THEN 'Yes'
+        ELSE 'No'
+    END AS is_sistercity_account,
+    
+    u.user_registered
+    
+FROM sciwplg_users u
+
+LEFT JOIN sciwplg_usermeta um
+    ON u.ID = um.user_id
+    AND um.meta_key = 'sciwplg_capabilities'
+
+WHERE
+(
+    um.meta_value LIKE '%"primary_contact"%'
+    OR um.meta_value LIKE '%"secondary_contact"%'
+    OR um.meta_value LIKE '%"voting_delegate"%'
+)
+
+ORDER BY u.ID ASC;
+
+
+-----------------------------------------------------
+
+
+SELECT 
+    pmu.id,
+    pmu.user_id,
+
+    u.user_login AS user_name,
+    u.user_email,
+
+    pmu.membership_id,
+    pml.name AS membership_name,
+
+    pmu.initial_payment,
+    pmu.status,
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+LEFT JOIN sciwplg_users u 
+    ON u.ID = pmu.user_id
+
+LEFT JOIN sciwplg_pmpro_membership_levels pml
+    ON pml.id = pmu.membership_id
+
+WHERE 
+    (
+        LENGTH(u.user_login) 
+        - LENGTH(REPLACE(u.user_login, '_', ''))
+    ) >= 2;
+
+
+
+SELECT 
+    user_id,
+    COUNT(*) AS active_records
+FROM sciwplg_pmpro_memberships_users
+WHERE status = 'active'
+GROUP BY user_id
+HAVING COUNT(*) > 1 
+ORDER BY `sciwplg_pmpro_memberships_users`.`user_id` ASC
+
+
+SELECT 
+    u.ID AS user_id,
+    u.user_login AS user_name,
+    COUNT(*) AS active_records
+FROM sciwplg_pmpro_memberships_users pmu
+JOIN sciwplg_users u 
+    ON pmu.user_id = u.ID
+WHERE pmu.status = 'active'
+GROUP BY u.ID, u.user_login
+HAVING COUNT(*) > 1
+ORDER BY u.ID ASC;
+
+
+
+
+
+<!-- CODE FOR CHECK ROLE AND MEMBERSHIP -->
+ SELECT 
+    u.ID,
+    u.user_login,
+    u.user_email,
+    u.user_registered,
+
+    CASE
+        WHEN um.meta_value LIKE '%subscriber%'
+            THEN 'Subscriber'
+
+        WHEN um.user_id IS NULL
+            OR um.meta_value = ''
+            OR um.meta_value = 'a:0:{}'
+            THEN 'No Role'
+    END AS user_role,
+
+    pm.membership_id,
+    pm.status AS membership_status,
+    pm.startdate,
+    pm.enddate
+
+FROM sciwplg_users u
+
+LEFT JOIN sciwplg_usermeta um
+    ON u.ID = um.user_id
+    AND um.meta_key = 'sciwplg_capabilities'
+
+INNER JOIN (
+    SELECT p1.*
+    FROM sciwplg_pmpro_memberships_users p1
+
+    INNER JOIN (
+        SELECT user_id, MAX(id) AS max_id
+        FROM sciwplg_pmpro_memberships_users
+        WHERE membership_id IS NOT NULL
+        GROUP BY user_id
+    ) p2
+    ON p1.id = p2.max_id
+
+) pm
+ON u.ID = pm.user_id
+
+WHERE
+(
+    um.meta_value LIKE '%subscriber%'
+
+    OR um.user_id IS NULL
+    OR um.meta_value = ''
+    OR um.meta_value = 'a:0:{}'
+)
+
+AND pm.membership_id IS NOT NULL
+AND pm.membership_id <> ''
+
+ORDER BY u.ID DESC;
+
+
+
+
+
+SELECT 
+    u.ID,
+    u.user_login,
+    u.user_email,
+
+    CASE
+        WHEN um.meta_value LIKE '%"subscriber"%'
+            THEN 'Subscriber'
+
+        WHEN um.user_id IS NULL
+            OR um.meta_value = ''
+            OR um.meta_value = 'a:0:{}'
+            THEN 'No Role'
+    END AS user_role,
+    
+    u.user_registered,
+
+    pm.membership_id,
+    pm.status AS membership_status,
+    pm.startdate,
+    pm.enddate
+
+FROM sciwplg_users u
+
+LEFT JOIN sciwplg_usermeta um
+    ON u.ID = um.user_id
+    AND um.meta_key = 'sciwplg_capabilities'
+
+LEFT JOIN (
+    SELECT p1.*
+    FROM sciwplg_pmpro_memberships_users p1
+
+    INNER JOIN (
+        SELECT user_id, MAX(id) AS max_id
+        FROM sciwplg_pmpro_memberships_users
+        GROUP BY user_id
+    ) p2
+    ON p1.id = p2.max_id
+
+) pm
+ON u.ID = pm.user_id
+
+WHERE
+(
+    um.meta_value LIKE '%"subscriber"%'
+
+    OR um.user_id IS NULL
+    OR um.meta_value = ''
+    OR um.meta_value = 'a:0:{}'
+)
+
+ORDER BY u.ID DESC;
+
+
+
+
+<!-- One Query to View All Related Data (USERS, ORDERS, MEMBERSHIP)-->
+SELECT
+    u.ID,
+    u.user_login,
+    u.user_email,
+    mu.membership_id,
+    mu.status,
+    mu.startdate,
+    mu.enddate,
+
+    o.id AS order_id,
+    o.code,
+    o.total,
+    o.status AS order_status,
+    o.timestamp,
+
+    sf.*
+FROM sciwplg_users u
+
+LEFT JOIN sciwplg_pmpro_memberships_users mu
+    ON mu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_orders o
+    ON o.user_id = u.ID
+
+LEFT JOIN sci_sf_accounts sf
+    ON sf.wp_user_id = u.ID
+
+WHERE u.ID = 123;
+
+
+
+<!-- FIND ACTIVE MEMBERSHIP RECORD (USERS, MEMBERSHIP)-->
+SELECT 
+    mu.user_id,
+    
+    u.user_login,
+    u.user_email,
+
+    mu.status,
+    DATE(mu.startdate) AS start_date,
+    DATE_FORMAT(mu.enddate, '%Y-%m-%d') AS end_date,
+    DATE_FORMAT(mu.modified, '%Y-%m-%d') AS modified
+FROM sciwplg_pmpro_memberships_users mu
+LEFT JOIN sciwplg_users u 
+    ON mu.user_id = u.ID
+WHERE mu.status = 'active'
+AND mu.user_id IN (
+    SELECT ID
+    FROM sciwplg_users
+    WHERE user_login IN (
+        'KEY_WEST_FL_US',
+        'SELLERSBURG_IN_US'
+    )
+) 
+ORDER BY `mu`.`user_id` ASC;
+
+
+
+<!-- FIND ACTIVE MEMBERSHIP RECORD (USERS, MEMBERSHIP)-->
+SELECT 
+    u.user_login,
+    mu.membership_id,
+    mu.status,
+
+    DATE(mu.startdate) AS start_date,
+    DATE_FORMAT(mu.enddate, '%Y-%m-%d') AS end_date,
+    DATE_FORMAT(mu.modified, '%Y-%m-%d') AS modified
+FROM sciwplg_pmpro_memberships_users mu
+LEFT JOIN sciwplg_users u 
+    ON mu.user_id = u.ID
+WHERE mu.status = 'active'
+AND mu.user_id IN (
+    SELECT ID
+    FROM sciwplg_users
+    WHERE user_login IN (
+        'PAIA_HI_US',
+        'BHOPAL_MP_IN',
+        'SALT_LAKE_CITY_UT_US',
+        'FACILIS_AUT_QUIA_DOL_AL_US',
+        'AGUA_DULCE_TX_US',
+        'BAGDARIN_BU_RU',
+        'WEST_VALLEY_CITY_UT_US',
+        'BALTIC_SD_US',
+        'SURAT_GJ_IN'
+    )
+) 
+ORDER BY `mu`.`user_id` ASC;
+
+
+
+
+SELECT 
+    pmu.user_id,
+    u.user_login,
+    u.user_email,
+    u.user_registered,
+
+    pmu.id AS membership_row_id,
+    pmu.membership_id,
+    pmu.status,
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified,
+
+    um.meta_key,
+    um.meta_value,
+
+    o.option_name,
+    o.option_value
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+LEFT JOIN sciwplg_users u 
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_usermeta um 
+    ON pmu.user_id = um.user_id
+
+LEFT JOIN sciwplg_options o
+    ON o.option_value LIKE CONCAT('%', pmu.user_id, '%')
+
+WHERE pmu.status = 'active'
+
+AND pmu.user_id IN (
+    SELECT user_id
+    FROM sciwplg_pmpro_memberships_users
+    WHERE status = 'active'
+    GROUP BY user_id
+    HAVING COUNT(*) > 1
+)
+
+ORDER BY pmu.user_id;
+
+
+OR
+SELECT 
+    pmu.user_id,
+    u.user_login,
+    pmu.id AS membership_row_id,
+    pmu.membership_id,
+    pmu.status,
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN (
+    SELECT user_id
+    FROM sciwplg_pmpro_memberships_users
+    WHERE status = 'active'
+    GROUP BY user_id
+    HAVING COUNT(*) > 1
+) dup
+ON pmu.user_id = dup.user_id
+
+LEFT JOIN sciwplg_users u 
+    ON pmu.user_id = u.ID
+
+WHERE pmu.status = 'active'
+
+ORDER BY pmu.user_id;
+
+
+
+
+
+<!-- username me minimum 2 underscore hone chahiye -->
+SELECT 
+    pmu.user_id,
+    u.user_login AS username,
+    u.user_email,
+
+    pmu.id AS membership_user_row_id,
+    pmu.membership_id,
+    ml.name AS membership_name,
+
+    pmu.status AS membership_status, 
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified,
+
+    mo.id AS order_id,
+    mo.code AS order_code,
+    mo.total,
+    mo.payment_type,
+    mo.gateway,
+    mo.status AS payment_status,
+    mo.timestamp AS order_date,
+
+    /* Renewal Status */
+    CASE
+        WHEN mo.subscription_transaction_id IS NOT NULL 
+             OR mo.status = 'renewal'
+        THEN 'Yes'
+        ELSE 'No'
+    END AS renewal_status,
+
+    /* Export Status */
+    CASE
+        WHEN mo.status = 'success' 
+             AND (
+                    mo.subscription_transaction_id IS NOT NULL
+                    OR mo.notes LIKE '%Renewal%'
+                 )
+        THEN 'Paid (Renewal)'
+
+        WHEN mo.status = 'success'
+        THEN 'Paid'
+
+        WHEN mo.status = 'pending'
+             AND (
+                    mo.subscription_transaction_id IS NOT NULL
+                    OR mo.notes LIKE '%Renewal%'
+                 )
+        THEN 'Pending (Renewal)'
+
+        WHEN mo.status = 'pending'
+        THEN 'Pending'
+
+        ELSE mo.status
+    END AS export_status
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+LEFT JOIN sciwplg_pmpro_membership_orders mo
+    ON pmu.user_id = mo.user_id
+    AND pmu.membership_id = mo.membership_id
+
+WHERE 
+    (
+        u.user_login LIKE '%\_%\_%' ESCAPE '\'
+    )
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY 
+    pmu.user_id ASC,
+    mo.timestamp DESC;
+
+
+
+<!-- 1. Membership Users Export Query -->
+SELECT
+    pmu.user_id,
+
+    u.user_login AS username,
+    u.user_email AS email,
+
+    fn.meta_value AS first_name,
+    ln.meta_value AS last_name,
+
+    cap.meta_value AS membership_role,
+
+    pmu.membership_id,
+
+    ml.name AS membership_name,
+
+    pmu.status,
+
+    pmu.startdate AS start_date,
+    pmu.enddate AS end_date,
+    pmu.modified AS modified_date
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+/* First Name */
+LEFT JOIN sciwplg_usermeta fn
+    ON fn.user_id = u.ID
+    AND fn.meta_key = 'first_name'
+
+/* Last Name */
+LEFT JOIN sciwplg_usermeta ln
+    ON ln.user_id = u.ID
+    AND ln.meta_key = 'last_name'
+
+/* User Role */
+LEFT JOIN sciwplg_usermeta cap
+    ON cap.user_id = u.ID
+    AND cap.meta_key = 'sciwplg_capabilities'
+
+WHERE
+    u.user_login LIKE '%\\_%\\_%'
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY pmu.modified DESC;
+
+<!-- 2. If you want only clean role name like: -->
+SELECT
+    u.ID AS user_id,
+    u.user_login AS username,
+    u.user_email AS email,
+    cap.meta_value AS membership_role
+FROM sciwplg_users u
+LEFT JOIN sciwplg_usermeta cap
+    ON cap.user_id = u.ID
+    AND cap.meta_key = 'sciwplg_capabilities'
+WHERE u.user_login LIKE '%\\_%\\_%';
+
+OR
+
+REPLACE(
+ REPLACE(
+  REPLACE(cap.meta_value,
+   'a:1:{s:',''),
+  '";b:1;}',''),
+ ':1',''
+) AS membership_role
+
+OR
+<!-- To 1st query me ye line replace karo with this: cap.meta_value AS membership_role -->
+SUBSTRING_INDEX(
+    SUBSTRING_INDEX(cap.meta_value, '"', 2),
+    '"',
+    -1
+) AS membership_role,
+
+
+<!-- Final Correct Membership Export Query -->
+SELECT
+    pmu.user_id,
+
+    u.user_login AS username,
+    u.user_email AS email,
+
+    fn.meta_value AS first_name,
+    ln.meta_value AS last_name,
+
+    SUBSTRING_INDEX(
+        SUBSTRING_INDEX(cap.meta_value, '"', 2),
+        '"',
+        -1
+    ) AS membership_role,
+
+    pmu.membership_id,
+
+    ml.name AS membership_name,
+
+    pmu.status,
+
+    pmu.startdate AS start_date,
+    pmu.enddate AS end_date,
+    pmu.modified AS modified_date
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+LEFT JOIN sciwplg_usermeta fn
+    ON fn.user_id = u.ID
+    AND fn.meta_key = 'first_name'
+
+LEFT JOIN sciwplg_usermeta ln
+    ON ln.user_id = u.ID
+    AND ln.meta_key = 'last_name'
+
+LEFT JOIN sciwplg_usermeta cap
+    ON cap.user_id = u.ID
+    AND cap.meta_key = 'sciwplg_capabilities'
+
+WHERE
+    u.user_login LIKE '%\\_%\\_%'
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY pmu.modified DESC;
+
+
+
+<!-- 3. Orders Export Query -->
+SELECT
+
+    mo.user_id,
+
+    u.user_login AS username,
+
+    mo.membership_id,
+
+    ml.name AS membership_name,
+
+    mo.id AS order_id,
+
+    mo.code AS order_code,
+
+    mo.timestamp AS order_date,
+
+    mo.gateway AS payment_method,
+
+    mo.total AS total_amount,
+
+    mo.status,
+
+    mo.timestamp,
+
+    mo.notes AS description,
+
+    CONCAT(
+        'Name: ', mo.billing_name, '\n',
+        'Street: ', mo.billing_street, '\n',
+        'City: ', mo.billing_city, '\n',
+        'State: ', mo.billing_state, '\n',
+        'ZIP: ', mo.billing_zip, '\n',
+        'Country: ', mo.billing_country, '\n',
+        'Phone: ', mo.billing_phone
+    ) AS billing_details,
+
+    CASE
+        WHEN mo.status = 'success'
+            THEN 'Paid'
+
+        WHEN mo.status = 'pending'
+            THEN 'Pending'
+
+        WHEN mo.status = 'cancelled'
+            THEN 'Cancelled'
+
+        WHEN mo.status = 'refunded'
+            THEN 'Refunded'
+
+        ELSE mo.status
+    END AS level
+
+FROM sciwplg_pmpro_membership_orders mo
+
+INNER JOIN sciwplg_users u
+    ON mo.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON mo.membership_id = ml.id
+
+WHERE
+    u.user_login LIKE '%\\_%\\_%'
+
+ORDER BY mo.timestamp DESC;
+
+OR
+
+SELECT
+
+    mo.user_id,
+
+    u.user_login AS username,
+
+    mo.membership_id,
+
+    ml.name AS membership_name,
+
+    mo.id AS order_id,
+
+    mo.code AS order_code,
+
+    mo.timestamp AS order_date,
+
+    mo.gateway AS payment_method,
+
+    mo.total AS total_amount,
+
+    mo.status,
+
+    mo.timestamp,
+
+    mo.notes AS description,
+
+    CONCAT(
+        'Name: ', mo.billing_name, '\n',
+        'Street: ', mo.billing_street, '\n',
+        'City: ', mo.billing_city, '\n',
+        'State: ', mo.billing_state, '\n',
+        'ZIP: ', mo.billing_zip, '\n',
+        'Country: ', mo.billing_country, '\n',
+        'Phone: ', mo.billing_phone
+    ) AS billing_details,
+
+    CASE
+        WHEN mo.status = 'success'
+             AND prev_success.has_previous = 1
+            THEN 'Paid (Renewal)'
+
+        WHEN mo.status = 'success'
+            THEN 'Paid'
+
+        WHEN mo.status = 'pending'
+             AND prev_success.has_previous = 1
+            THEN 'Pending (Renewal)'
+
+        WHEN mo.status = 'pending'
+            THEN 'Pending'
+
+        ELSE mo.status
+    END AS payment_status,
+
+    CASE
+        WHEN prev_success.has_previous = 1
+            THEN 'Yes'
+        ELSE 'No'
+    END AS renewal_status
+
+FROM sciwplg_pmpro_membership_orders mo
+
+INNER JOIN sciwplg_users u
+    ON mo.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON mo.membership_id = ml.id
+
+/* Renewal Check */
+LEFT JOIN (
+    SELECT
+        mo1.id,
+        1 AS has_previous
+    FROM sciwplg_pmpro_membership_orders mo1
+    WHERE EXISTS (
+        SELECT 1
+        FROM sciwplg_pmpro_membership_orders mo2
+        WHERE mo2.user_id = mo1.user_id
+          AND mo2.membership_id = mo1.membership_id
+          AND mo2.status = 'success'
+          AND mo2.id < mo1.id
+    )
+) prev_success
+    ON mo.id = prev_success.id
+
+WHERE
+    u.user_login LIKE '%\\_%\\_%'
+
+ORDER BY mo.timestamp DESC;
+
+
+
+
+<!-- Agar sirf latest order chahiye per user + membership, toh ye optimized version use karo: -->
+SELECT 
+    pmu.user_id,
+    u.user_login AS username,
+    u.user_email,
+
+    pmu.id AS membership_user_row_id,
+    pmu.membership_id,
+    ml.name AS membership_name,
+
+    pmu.status AS membership_status,
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified,
+
+    mo.id AS order_id,
+    mo.code AS order_code,
+    mo.total,
+    mo.payment_type,
+    mo.gateway,
+    mo.status AS payment_status,
+    mo.timestamp AS order_date,
+
+    /* Renewal Status */
+    CASE
+        WHEN mo.subscription_transaction_id IS NOT NULL
+        THEN 'Yes'
+        ELSE 'No'
+    END AS renewal_status,
+
+    /* Export Status */
+    CASE
+        WHEN mo.status = 'success'
+             AND mo.subscription_transaction_id IS NOT NULL
+        THEN 'Paid (Renewal)'
+
+        WHEN mo.status = 'success'
+        THEN 'Paid'
+
+        WHEN mo.status = 'pending'
+             AND mo.subscription_transaction_id IS NOT NULL
+        THEN 'Pending (Renewal)'
+
+        WHEN mo.status = 'pending'
+        THEN 'Pending'
+
+        ELSE mo.status
+    END AS export_status
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+LEFT JOIN sciwplg_pmpro_membership_orders mo
+    ON pmu.user_id = mo.user_id
+    AND pmu.membership_id = mo.membership_id
+
+WHERE 
+    (
+        LENGTH(u.user_login)
+        - LENGTH(REPLACE(u.user_login, '_', ''))
+    ) >= 2
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY 
+    pmu.user_id ASC,
+    mo.timestamp DESC;
+
+
+
+
+
+
+
+
+
+SELECT 
+    pmu.user_id,
+    u.user_login AS username,
+    u.user_email,
+
+    pmu.id AS membership_user_row_id,
+    pmu.membership_id,
+    ml.name AS membership_name,
+
+    pmu.status AS membership_status,
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified,
+
+    mo.id AS order_id,
+    mo.code AS order_code,
+    mo.total,
+    mo.payment_type,
+    mo.gateway,
+    mo.status AS payment_status,
+    mo.timestamp AS order_date,
+
+    /* Renewal Status */
+    CASE
+        WHEN EXISTS (
+            SELECT 1
+            FROM sciwplg_pmpro_membership_orders mo2
+            WHERE mo2.user_id = mo.user_id
+              AND mo2.membership_id = mo.membership_id
+              AND mo2.status = 'success'
+              AND mo2.id < mo.id
+        )
+        THEN 'Yes'
+        ELSE 'No'
+    END AS renewal_status,
+
+    /* Export Status */
+    CASE
+
+        WHEN mo.status = 'success'
+             AND EXISTS (
+                SELECT 1
+                FROM sciwplg_pmpro_membership_orders mo2
+                WHERE mo2.user_id = mo.user_id
+                  AND mo2.membership_id = mo.membership_id
+                  AND mo2.status = 'success'
+                  AND mo2.id < mo.id
+             )
+        THEN 'Paid (Renewal)'
+
+        WHEN mo.status = 'success'
+        THEN 'Paid'
+
+        WHEN mo.status = 'pending'
+             AND EXISTS (
+                SELECT 1
+                FROM sciwplg_pmpro_membership_orders mo2
+                WHERE mo2.user_id = mo.user_id
+                  AND mo2.membership_id = mo.membership_id
+                  AND mo2.status = 'success'
+                  AND mo2.id < mo.id
+             )
+        THEN 'Pending (Renewal)'
+
+        WHEN mo.status = 'pending'
+        THEN 'Pending'
+
+        ELSE mo.status
+
+    END AS export_status
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+LEFT JOIN sciwplg_pmpro_membership_orders mo
+    ON pmu.user_id = mo.user_id
+    AND pmu.membership_id = mo.membership_id
+
+WHERE 
+    (
+        LENGTH(u.user_login)
+        - LENGTH(REPLACE(u.user_login, '_', ''))
+    ) >= 2
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY 
+    pmu.user_id ASC,
+    mo.timestamp DESC;
+
+
+
+
+    
+
+SELECT 
+    pmu.user_id,
+    u.user_login AS username,
+    u.user_email,
+
+    pmu.id AS membership_user_row_id,
+    pmu.membership_id,
+    ml.name AS membership_name,
+
+    pmu.status AS membership_status,
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified,
+
+    mo.id AS order_id,
+    mo.code AS order_code,
+    mo.total,
+    mo.payment_type,
+    mo.gateway,
+    mo.status AS payment_status,
+    mo.timestamp AS order_date,
+
+    /* Renewal Status */
+    CASE
+        WHEN mo.subscription_transaction_id IS NOT NULL
+        THEN 'Yes'
+        ELSE 'No'
+    END AS renewal_status,
+
+    /* Export Status */
+    CASE
+        WHEN mo.status = 'success'
+             AND mo.subscription_transaction_id IS NOT NULL
+        THEN 'Paid (Renewal)'
+
+        WHEN mo.status = 'success'
+        THEN 'Paid'
+
+        WHEN mo.status = 'pending'
+             AND mo.subscription_transaction_id IS NOT NULL
+        THEN 'Pending (Renewal)'
+
+        WHEN mo.status = 'pending'
+        THEN 'Pending'
+
+        ELSE mo.status
+    END AS export_status
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+LEFT JOIN sciwplg_pmpro_membership_orders mo
+    ON pmu.user_id = mo.user_id
+    AND pmu.membership_id = mo.membership_id
+
+WHERE 
+    (
+        LENGTH(u.user_login)
+        - LENGTH(REPLACE(u.user_login, '_', ''))
+    ) >= 2
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY 
+    pmu.user_id ASC,
+    mo.timestamp DESC;
+
+
+
+
+
+
+
+
+
+
+
+SELECT 
+    pmu.user_id,
+    u.user_login AS username,
+    u.user_email,
+
+    pmu.membership_id,
+    ml.name AS membership_name,
+
+    pmu.status AS membership_status,
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified,
+
+    mo.id AS order_id,
+    mo.code AS order_code,
+    mo.timestamp AS order_date,
+
+    /* Export Status */
+    CASE
+
+        WHEN mo.status = 'success'
+             AND EXISTS (
+                SELECT 1
+                FROM sciwplg_pmpro_membership_orders mo2
+                WHERE mo2.user_id = mo.user_id
+                  AND mo2.membership_id = mo.membership_id
+                  AND mo2.status = 'success'
+                  AND mo2.id < mo.id
+             )
+        THEN 'Paid (Renewal)'
+
+        WHEN mo.status = 'success'
+        THEN 'Paid'
+
+        WHEN mo.status = 'pending'
+             AND EXISTS (
+                SELECT 1
+                FROM sciwplg_pmpro_membership_orders mo2
+                WHERE mo2.user_id = mo.user_id
+                  AND mo2.membership_id = mo.membership_id
+                  AND mo2.status = 'success'
+                  AND mo2.id < mo.id
+             )
+        THEN 'Pending (Renewal)'
+
+        WHEN mo.status = 'pending'
+        THEN 'Pending'
+
+        ELSE mo.status
+
+    END AS payment_status,    
+
+    /* Renewal Status */
+    CASE
+        WHEN EXISTS (
+            SELECT 1
+            FROM sciwplg_pmpro_membership_orders mo2
+            WHERE mo2.user_id = mo.user_id
+              AND mo2.membership_id = mo.membership_id
+              AND mo2.status = 'success'
+              AND mo2.id < mo.id
+        )
+        THEN 'Yes'
+        ELSE 'No'
+    END AS renewal_status
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+LEFT JOIN sciwplg_pmpro_membership_orders mo
+    ON pmu.user_id = mo.user_id
+    AND pmu.membership_id = mo.membership_id
+
+WHERE 
+    (
+        LENGTH(u.user_login)
+        - LENGTH(REPLACE(u.user_login, '_', ''))
+    ) >= 2
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY 
+    mo.timestamp DESC;
+
+
+
+Optimized Query (same result)
+SELECT 
+    pmu.user_id,
+    u.user_login AS username,
+    u.user_email,
+
+    pmu.membership_id,
+    ml.name AS membership_name,
+
+    pmu.status AS membership_status,
+    pmu.startdate,
+    pmu.enddate,
+    pmu.modified,
+
+    mo.id AS order_id,
+    mo.code AS order_code,
+    mo.timestamp AS order_date,
+
+    CASE
+        WHEN mo.status = 'success' AND prev_success.has_previous = 1
+            THEN 'Paid (Renewal)'
+
+        WHEN mo.status = 'success'
+            THEN 'Paid'
+
+        WHEN mo.status = 'pending' AND prev_success.has_previous = 1
+            THEN 'Pending (Renewal)'
+
+        WHEN mo.status = 'pending'
+            THEN 'Pending'
+
+        ELSE mo.status
+    END AS payment_status,
+
+    CASE
+        WHEN prev_success.has_previous = 1
+            THEN 'Yes'
+        ELSE 'No'
+    END AS renewal_status
+
+FROM sciwplg_pmpro_memberships_users pmu
+
+INNER JOIN sciwplg_users u
+    ON pmu.user_id = u.ID
+
+LEFT JOIN sciwplg_pmpro_membership_levels ml
+    ON pmu.membership_id = ml.id
+
+LEFT JOIN sciwplg_pmpro_membership_orders mo
+    ON pmu.user_id = mo.user_id
+    AND pmu.membership_id = mo.membership_id
+
+LEFT JOIN (
+    SELECT 
+        mo1.id,
+        1 AS has_previous
+    FROM sciwplg_pmpro_membership_orders mo1
+    WHERE EXISTS (
+        SELECT 1
+        FROM sciwplg_pmpro_membership_orders mo2
+        WHERE mo2.user_id = mo1.user_id
+          AND mo2.membership_id = mo1.membership_id
+          AND mo2.status = 'success'
+          AND mo2.id < mo1.id
+    )
+) prev_success
+    ON mo.id = prev_success.id
+
+WHERE 
+    u.user_login LIKE '%\\_%\\_%'
+
+    AND pmu.status IN (
+        'active',
+        'inactive',
+        'admin_cancelled',
+        'expired'
+    )
+
+ORDER BY mo.timestamp DESC;
+
+
+
+<!-- Search ID from wp_user_id to pmpro sciwplg_pmpro_memberships_users -->
+SELECT mu.* FROM sciwplg_pmpro_memberships_users mu WHERE mu.user_id IN (SELECT ID FROM sciwplg_users WHERE user_login IN ('CCUSANTIUM_FL_US'));
+
+
+
+
+
+<!-- ---------------------- ORDER TABLE ------------------------ -->
+__________________________________________________________________
+
+SELECT * 
+    FROM `sciwplg_pmpro_membership_orders` 
+    WHERE `subscription_transaction_id` IS NOT NULL
+    AND `subscription_transaction_id` != '';
+
+
+
+
+<!-- ---------------------- USERS TABLE ------------------------ -->
+__________________________________________________________________
+<!-- FIND USER DETAILS -->
+    SELECT ID, user_login, user_email, FROM `sciwplg_users` WHERE `ID` = 2385;
+    SELECT ID, user_login, user_email FROM `sciwplg_users` WHERE `user_email` = 'cep-amuta@erc.org.il';
+
+    
+<!-- FIND SPECIFIC EMAIL -->
+    SELECT ID, user_login, user_email FROM `sciwplg_users` WHERE ID > 931 AND `user_email` NOT LIKE '%.invalid.in' AND `user_email` NOT LIKE '%@yopmail.com' AND `user_email` NOT LIKE '%@mailinator.com';
+
+
+
+<!-- ---------------------- USERMETA TABLE ------------------------ -->
+__________________________________________________________________
+<!-- FIND KEY -->
+SELECT * FROM wp_usermeta WHERE user_id = 2699 AND meta_key = 'membership_cancel_scheduled';
+
+
+<!-- FIND KEY AND USER DETAILS -->
+SELECT um.*
+FROM wp_usermeta um
+JOIN wp_users u ON um.user_id = u.ID
+WHERE u.user_login = 'ACCUSANTIUM_FL_US'
+AND um.meta_key = 'membership_cancel_scheduled';
+
+
+<!-- FIND SPECIFIC KEY -->
+SELECT meta_key, meta_value 
+FROM wp_usermeta 
+WHERE user_id = 42 
+  AND meta_key IN (
+    'community_name',
+    'community_city', 
+    'community_state',
+    'community_country',
+    'population_size'
+);
+
+  
+<!-- EXPORT USERS HAVING SUBCRIBER Role -->
+SELECT 
+    u.ID,
+    u.user_login,
+    u.user_email,
+    u.user_registered,
+    um.meta_value AS role_data
+FROM wp_users u
+JOIN wp_usermeta um 
+    ON u.ID = um.user_id
+WHERE um.meta_key = 'wp_capabilities'
+AND um.meta_value LIKE '%subscriber%';
+
+
+<!-- EXPORT USERS HAVING No Role -->
+SELECT 
+    u.ID,
+    u.user_login,
+    u.user_email,
+    u.user_registered
+FROM wp_users u
+LEFT JOIN wp_usermeta um 
+    ON u.ID = um.user_id
+    AND um.meta_key = 'wp_capabilities'
+WHERE um.user_id IS NULL
+   OR um.meta_value = ''
+   OR um.meta_value = 'a:0:{}';
+
+
+    
+
+
+<!-- ---------------------- OPTIONS TABLE ------------------------ -->
+__________________________________________________________________
+<!-- FIND URL -->
+    SELECT option_name, option_value FROM wp_options WHERE option_name IN ('siteurl','home');
+
+    
+<!-- FIND KEY -->
+    SELECT * FROM sciwplg_options WHERE option_name = 'scheduled_cancellation_queue';
+
+    
+<!-- UPDATE URL -->
+    UPDATE wp_options SET option_value='https://stage.exploresv.org' WHERE option_name IN ('siteurl','home');
+    
+
+
+    
+
+<!-- ---------------------- SF ACCOUNT TABLE ------------------------ -->
+__________________________________________________________________
+<!-- Find details via username -->
+SELECT * FROM `sciwplg_sf_accounts` WHERE `username` = 'DOVER_DE_US'\G;
+
+
+
+<!-- Find usernames containing special characters [PARIS-CITY(FR)_IDF_FR] -->
+SELECT account_name, country, city, state, username, wordpress_member_id
+FROM sciwplg_sf_accounts
+WHERE username REGEXP '[^A-Z0-9_]';
+
+SELECT 
+    account_name,
+    membership_expired,
+    sci_member,
+    is_membership_expired,
+    wordpress_user_id,
+CASE 
+    WHEN sf_account_parent_id IS NOT NULL 
+            AND sf_account_parent_id != '' 
+    THEN sf_account_parent_id
+    ELSE sf_account_id
+END AS final_account_id
+
+FROM sciwplg_sf_accounts
+WHERE wordpress_member_id = 2749;
+
+
+
+<!-- Find Duplicate account_name -->
+SELECT 
+    account_name,
+    COUNT(*) AS duplicate_count
+FROM 
+    sciwplg_sf_accounts
+GROUP BY 
+    account_name
+HAVING 
+    COUNT(*) > 1
+LIMIT 100   
+
+
+
+<!-- ---------------------- LOCATION LOOKUP TABLE ------------------------ -->
+__________________________________________________________________
+<!-- Add Location (City, Country, State) - INSERT QUERY -->
+    INSERT INTO `sciwplg_location_lookup` (`country_id`, `country_name`, `country_code`, `state_id`, `state_name`, `state_code`, `city_id`, `city_name`, `full_path`) VALUES
+    (233, 'United States', 'US', 1447, 'North Carolina', 'NC', 157058, 'Saluda', 'Saluda, North Carolina, United States'),
+    (233, 'United States', 'US', 1440, 'Indiana', 'IN', 157059, 'Saluda', 'Saluda, Indiana, United States');
+          
+    
+<!-- Search Username in Database (sciwplg_location_lookup) - for US, DE, DOVER_DE_US -->
+    SELECT * FROM `sciwplg_location_lookup` WHERE `country_code` = 'US' AND `state_code` = 'DE' AND `city_name` IN ('DOVER_DE_US')\G;
+    OR
+    SELECT * FROM sciwplg_location_lookup WHERE country_code = 'US' AND state_code = 'DE'  AND city_name LIKE 'DOV%'\G
+
+
+
+
+
+
+<!-- Find usernames with more than 2 underscores -->
+SELECT *
+FROM sciwplg_location
+WHERE
+    LENGTH(username)
+    - LENGTH(REPLACE(username, '_', '')) <> 2;
+
+  
+<!-- Find usernames containing special characters [PARIS-CITY(FR)_IDF_FR] -->
+SELECT *
+FROM sciwplg_location
+WHERE username REGEXP '[^A-Z0-9_]';
+
+
+
+
+
+
+
+<!-- ---------------------- LOCATION LOOKUP TABLE ------------------------ -->
+__________________________________________________________________
+<!-- DONOR WALL -->
+SELECT 
+    p.ID,
+    p.post_title,
+    p.post_type,
+    pm.meta_key,
+    pm.meta_value
+FROM sciwplg_posts p
+LEFT JOIN sciwplg_postmeta pm 
+    ON p.ID = pm.post_id
+WHERE p.post_type = 'sci_donor_wall'
+AND p.ID IN (
+    SELECT post_id
+    FROM sciwplg_postmeta
+    WHERE meta_key = 'sf_id'
+    AND meta_value = '001DG00001kp2BiYAI'
+);
+
+
+SELECT p.ID, p.post_title, pm.meta_key, pm.meta_value
+FROM sciwplg_posts p
+LEFT JOIN sciwplg_postmeta pm 
+    ON p.ID = pm.post_id
+WHERE p.post_type = 'sci_donor_wall'
+AND (
+    p.post_title = 'Kippen De Alba Chu'
+    OR (
+        pm.meta_key = 'sf_id'
+        AND pm.meta_value = '001DG00001kp2BiYAI'
+    )
+);
+
+
+SELECT pm.*
+FROM sciwplg_postmeta pm
+INNER JOIN sciwplg_posts p 
+    ON p.ID = pm.post_id
+WHERE p.post_type = 'sci_donor_wall'
+AND pm.post_id = 95622;
+
+
+DELETE FROM sciwplg_postmeta WHERE post_id = 95622;
+
+DELETE FROM `sciwplg_posts` WHERE `sciwplg_posts`.`ID` = 95622
+
+
+<!-- TARGETED QUERY -->
+DELETE p, pm
+FROM sciwplg_posts p
+LEFT JOIN sciwplg_postmeta pm 
+    ON p.ID = pm.post_id
+WHERE p.post_type = 'sci_donor_wall'
+AND (
+    p.post_title = 'Test12 User12'
+    OR (
+        pm.meta_key = 'sf_id'
+        AND pm.meta_value = '001DG00001kp2BiYAI'
+    )
+);
+
+// DELETE pm
+// FROM sciwplg_postmeta pm
+// INNER JOIN sciwplg_posts p 
+//     ON p.ID = pm.post_id
+// WHERE p.post_type = 'sci_donor_wall'
+// AND pm.post_id = 95622;
+
+
+// Extra safe rehna ho to transaction use kar sakte ho:
+// Isse test ho jayega bina permanent delete ke.
+// Agar sab sahi lage then ROLLBACK ki jagah COMMIT run kar dena.
+START TRANSACTION;
+
+DELETE pm
+FROM sciwplg_postmeta pm
+INNER JOIN sciwplg_posts p 
+    ON p.ID = pm.post_id
+WHERE p.post_type = 'sci_donor_wall'
+AND pm.post_id = 95622;
+
+ROLLBACK;

@@ -1,0 +1,38 @@
+<!-- Check -->
+ls -la /var/www/uat/wp-content/plugins/sci-feature-plugin/donor-wall.php
+Output: -rw-r--r-- 1 www-data www-data 14662 Jun 29 09:57 /var/www/uat/wp-content/plugins/sci-feature-plugin/donor-wall.php
+
+
+<!-- ============== Sirf apne specific folders pe chalao ============== -->
+<!-- # Sirf apne 5 plugins -->
+sudo chown -R www-data:www-data /var/www/uat/wp-content/plugins/pmpro-sci-custom/
+sudo chown -R www-data:www-data /var/www/uat/wp-content/plugins/wp-forms-custom-extension/
+
+<!-- # Sirf apna child theme -->
+sudo chown -R www-data:www-data /var/www/uat/wp-content/themes/hello-theme-child-master/
+
+
+
+<!-- OR (All in one line) -->
+sudo chown -R www-data:www-data /var/www/uat/wp-content/plugins/advanced-location-selector/ && sudo chown -R www-data:www-data /var/www/uat/wp-content/plugins/pmpro-sci-custom/ && sudo chown -R www-data:www-data /var/www/uat/wp-content/plugins/sci-partnerships/ && sudo chown -R www-data:www-data /var/www/uat/wp-content/plugins/sci-feature-plugin/ && sudo chown -R www-data:www-data /var/www/uat/wp-content/plugins/wp-forms-custom-extension/ && sudo chown -R www-data:www-data /var/www/uat/wp-content/themes/hello-theme-child-master/
+
+
+<!-- ============== Sirf apne specific folders pe chalao ============== -->
+<!-- # Sirf apne 5 plugins -->
+sudo chmod -R 775 /var/www/uat/wp-content/plugins/pmpro-sci-custom/
+sudo chmod -R 775 /var/www/uat/wp-content/plugins/sci-partnerships/
+
+<!-- # Sirf apna child theme -->
+sudo chmod -R 775 /var/www/uat/wp-content/themes/hello-theme-child-master/
+
+<!-- OR (All in one line) -->
+sudo chmod -R 775 /var/www/uat/wp-content/plugins/advanced-location-selector/ && sudo chmod -R 775 /var/www/uat/wp-content/plugins/pmpro-sci-custom/ && sudo chmod -R 775 /var/www/uat/wp-content/plugins/sci-partnerships/ && sudo chmod -R 775 /var/www/uat/wp-content/plugins/sci-feature-plugin/ && sudo chmod -R 775 /var/www/uat/wp-content/plugins/wp-forms-custom-extension/ && sudo chmod -R 775 /var/www/uat/wp-content/themes/hello-theme-child-master/
+
+
+
+
+<!-- For SelectDesign -->
+sudo chown -R www-data:www-data /var/www/design/public_html/wp-content/plugins/advanced-location-selector/ && sudo chown -R www-data:www-data /var/www/design/public_html/wp-content/plugins/pmpro-sci-custom/ && sudo chown -R www-data:www-data /var/www/design/public_html/wp-content/plugins/sci-partnerships/ && sudo chown -R www-data:www-data /var/www/design/public_html/wp-content/plugins/sci-feature-plugin/ && sudo chown -R www-data:www-data /var/www/design/public_html/wp-content/plugins/wp-forms-custom-extension/ && sudo chown -R www-data:www-data /var/www/design/public_html/wp-content/themes/hello-theme-child-master/
+
+
+sudo chmod -R 775 /var/www/design/public_html/wp-content/plugins/advanced-location-selector/ && sudo chmod -R 775 /var/www/design/public_html/wp-content/plugins/pmpro-sci-custom/ && sudo chmod -R 775 /var/www/design/public_html/wp-content/plugins/sci-partnerships/ && sudo chmod -R 775 /var/www/design/public_html/wp-content/plugins/sci-feature-plugin/ && sudo chmod -R 775 /var/www/design/public_html/wp-content/plugins/wp-forms-custom-extension/ && sudo chmod -R 775 /var/www/design/public_html/wp-content/themes/hello-theme-child-master/
